@@ -4,3 +4,4 @@ up=$PWD
 rm -f $up/.configuration
 rm -rf MIUIv5
 rm -rf MIUI6
+rm -rf MergedXML
