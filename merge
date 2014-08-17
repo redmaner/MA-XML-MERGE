@@ -10,14 +10,6 @@ echo -e "
 #################################################
 "
 
-MergeCustom () {
-custom_apk=$1
-if [ -f "$orig_dir/$apk_name/res/values/strings.xml" ] && [ -f "$targ_dir/$custom_apk/res/values-$lang_iso/strings.xml" ]; then
-	echo -e "\nMerging $custom_apk"
-	$up/merge_xml $orig_dir/$apk_name/res/values/strings.xml $targ_dir/$custom_apk/res/values-$lang_iso/strings.xml $new_dir/$custom_apk/res/values-$lang_iso/strings.xml
-fi
-}
-
 # Source information
 source $up/configure
 source $up/.configuration
@@ -30,15 +22,28 @@ for apk in $(find $orig_dir -iname "*.apk" | sort); do
 			echo -e "\nMerging $apk_name"
 			$up/merge_xml $orig_dir/$apk_name/res/values/strings.xml $targ_dir/$apk_name/res/values-$lang_iso/strings.xml $new_dir/$apk_name/res/values-$lang_iso/strings.xml
 		fi
-	elif [ "$aosp" == "yes" ]; then
-		case "$apk_name" in
-			CalendarGoogle.apk) MergeCustom "Calendar.apk";;
-			DeskClockGoogle.apk) MergeCustom "DeskClock.apk";;
-			EmailGoogle.apk) MergeCustom "Email.apk";;
-			Exchange2Google.apk) MergeCustom "Exchange2.apk";;
-			GalleryGoogle.apk) MergeCustom "MiuiGallery.apk";;
-			Music2.apk) MergeCustom "Music.apk";;
-			SystemUI.apk) MergeCustom "MiuiSystemUI.apk";;
-		esac
 	fi
-done	
+done
+
+
+# MergeCustom: Function to merge non matching apk's.
+# For example AOSP applications: SystemUI.apk is equal to MiuiSystemUI.apk
+MergeCustom () {
+custom_apk=$1
+apk_name=$2
+echo $custom_apk; sleep 1
+if [ -f "$orig_dir/$apk_name/res/values/strings.xml" ] && [ -f "$targ_dir/$custom_apk/res/values-$lang_iso/strings.xml" ]; then
+	echo -e "\nMerging $custom_apk"
+	$up/merge_xml $orig_dir/$apk_name/res/values/strings.xml $targ_dir/$custom_apk/res/values-$lang_iso/strings.xml $new_dir/$custom_apk/res/values-$lang_iso/strings.xml
+fi
+}
+
+if [ "$aosp" == "yes" ]; then
+	MergeCustom "CalendarGoogle.apk" "Calendar.apk"
+	MergeCustom "DeskClockGoogle.apk" "DeskClock.apk"
+	MergeCustom "EmailGoogle.apk" "Email.apk"
+	MergeCustom "Exchange2google.apk" "Exchange2.apk"
+	MergeCustom "GalleryGoogle.apk" "MiuiGallery.apk"
+	MergeCustom "Music2.apk" "Music.apk"
+	MergeCustom "SystemUI.apk" "MiuiSystemUI.apk"
+fi	
