@@ -5,6 +5,8 @@ up=$PWD
 source $up/merge.cfg
 
 MergeStrings () {
+mkdir -p $new_string_dir
+echo ">>> Merging to $new_string"
 cat > $new_string << EOF
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
@@ -25,11 +27,18 @@ cat $orig_string | sed -e '/string name="/!d' | cut -d'"' -f2 | uniq --unique | 
 	fi
 done
 echo '</resources>' >> $new_string
+echo ">>> Sorting and cleaning up $new_string"
 $python $up/sort.py $new_string_dir > /dev/null
 }
 
 ShowHelp () {
-echo -e "\nScript requires three arguments\nFirst argument: path to original strings.xml\nSecond argument: path to target strings.xml\nThird argument: path to new strings.xml"
+echo -e "
+Script requires three arguments
+First argument: path to original strings.xml
+Second argument: path to target strings.xml
+Third argument: path to new strings.xml
+"
+exit
 }
 
 if [ -f "$1" ]; then 
@@ -42,9 +51,10 @@ if [ -f "$2" ]; then
 else
 	ShowHelp; exit
 fi
-if [ -f "$3" ]; then 
+if [ "$3" != "" ]; then 
 	new_string=$3
 	new_string_dir=$(dirname $new_string)
 else
 	ShowHelp; exit
 fi	
+MergeStrings

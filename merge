@@ -1,0 +1,44 @@
+#!/bin/bash
+# Copyright (c) 2014, Redmaner
+
+VERSION=1.0
+up=$PWD
+
+echo -e "
+#################################################
+ MA-XML-MERGE V$VERSION
+#################################################
+"
+
+MergeCustom () {
+custom_apk=$1
+if [ -f "$orig_dir/$apk_name/res/values/strings.xml" ] && [ -f "$targ_dir/$custom_apk/res/values-$lang_iso/strings.xml" ]; then
+	echo -e "\nMerging $custom_apk"
+	$up/merge_xml $orig_dir/$apk_name/res/values/strings.xml $targ_dir/$custom_apk/res/values-$lang_iso/strings.xml $new_dir/$custom_apk/res/values-$lang_iso/strings.xml
+fi
+}
+
+# Source information
+source $up/configure
+source $up/.configuration
+source $up/merge.cfg
+
+for apk in $(find $orig_dir -iname "*.apk" | sort); do
+	apk_name=$(basename $apk)
+	if [ -d $targ_dir/$apk_name ]; then
+		if [ -f "$orig_dir/$apk_name/res/values/strings.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/strings.xml" ]; then
+			echo -e "\nMerging $apk_name"
+			$up/merge_xml $orig_dir/$apk_name/res/values/strings.xml $targ_dir/$apk_name/res/values-$lang_iso/strings.xml $new_dir/$apk_name/res/values-$lang_iso/strings.xml
+		fi
+	elif [ "$aosp" == "yes" ]; then
+		case "$apk_name" in
+			CalendarGoogle.apk) MergeCustom "Calendar.apk";;
+			DeskClockGoogle.apk) MergeCustom "DeskClock.apk";;
+			EmailGoogle.apk) MergeCustom "Email.apk";;
+			Exchange2Google.apk) MergeCustom "Exchange2.apk";;
+			GalleryGoogle.apk) MergeCustom "MiuiGallery.apk";;
+			Music2.apk) MergeCustom "Music.apk";;
+			SystemUI.apk) MergeCustom "MiuiSystemUI.apk";;
+		esac
+	fi
+done	

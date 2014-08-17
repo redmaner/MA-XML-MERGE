@@ -1,0 +1,137 @@
+#!/bin/bash
+# Copyright (c) 2014, Redmaner
+
+up=$PWD
+
+InputPathOrig () {
+echo -e "\nPlease enter the path to the exsisting repository, up to the main folder (root of the applications)
+For example: /home/redmaner/MIUI6-XML-NL/Dutch/main"
+read input
+if [ -d $input ]; then
+	orig_dir=$input
+else
+	echo "Path doesn't exsist"; InputPathOrig
+fi
+}
+
+CheckAosp () {
+echo -e "\nIs this exsisting repository AOSP? (yes,no): "; read input
+case $input in
+	"yes"|"no") 
+	aosp=$input;;
+	*) echo "Wrong input"; CheckAosp;;
+esac
+}
+
+InputPathTarg () {
+echo -e "\nPlease enter the path to the repository with exsisting translations
+Up to the main folder (root of the applications)
+For example: /home/redmaner/MA-XML-5.0-DUTCH/Dutch/main"
+read input
+if [ -d $input ]; then
+	targ_dir=$input
+	CheckAosp
+else
+	echo "Path doesn't exsist"; InputPathTarg
+fi
+}
+
+InputPathNew () {
+echo -e "\nPlease enter the path to the exsisting repository, up to the main folder (root of the applications)
+For example: /home/redmaner/MIUI6-XML-NL/Dutch/main"
+
+read input
+if [ -d $input ]; then
+	new_dir=$input
+else
+	echo "Path doesn't exsist"; InputPathNew
+fi
+}
+
+MakeConfig () {
+echo -e "\nThis tool merges exsisting XML translations into new XML's and is designed for Xiaomi.eu translation repositories.
+This tool requires some information to work properly and only works for the main folder."
+
+echo -en "\nPlease enter the name of your language (for example: Dutch): "; read input
+lang_name=$input
+
+echo -en "\nplease enter the iso code of your language (for example: nl): "; read input
+lang_iso=$input
+
+echo -e "\nWhich repository (MIUI Version) do you want to use as base for your new translation?
+ 1 - MIUIv5 aries (Xiaomi Mi2)
+ 2 - MIUIv5 cancro (Xiaomi Mi3/Mi4)
+
+ 3 - MIUI6 Tablet mocha (Xiaomi MiPad)
+ 4 - MIUI6 Cancro (Xiaomi Mi3/Mi4)
+
+ 5 - An exsisting repository on my harddrive"
+echo -en "\nPlease enter your choice: "; read input
+
+case "$input" in 
+	1) SyncLang "new" "https://github.com/Acid-miuipolskapl/v5-XML-Compare" "MIUIv5"
+	   orig_dir=$up/MIUIv5/aries
+	   dir_mode=auto;;
+	2) SyncLang "new" "https://github.com/Acid-miuipolskapl/v5-XML-Compare" "MIUIv5"
+	   orig_dir=$up/MIUIv5/cancro
+	   dir_mode=auto;;
+	3) SyncLang "new" "git@github.com:Acid-miuipolskapl/v6-XML-Compare.git" "MIUI6"
+	   orig_dir=$up/MIUI6/mocha
+	   dir_mode=auto;;
+	4) SyncLang "new" "git@github.com:Acid-miuipolskapl/v6-XML-Compare.git" "MIUI6"
+	   orig_dir=$up/MIUI6/cancro
+	   dir_mode=auto;;
+	5) InputPathOrig
+	   dir_mode=custom;;
+esac
+
+InputPathTarg
+
+echo -e "Where do the new strings.xml need to go?
+ 1 - New folder/repository
+ 2 - Exsisting repository
+
+WARNING: If you select an exsising repository files could be overwritten by merge"
+echo -en "\nPlease enter your choice: "; read input
+
+case "$input" in
+	1) new_dir=$up/MergedXML/$lang_name/main;;
+	2) InputPathNew;;
+esac
+
+echo -e "\nConfiguration complete, thank you"
+cat > .configuration << EOF
+#!/bin/bash
+
+lang_name=$lang_name
+lang_iso=$lang_iso
+orig_dir=$orig_dir
+aosp=$aosp
+dir_mode=$dir_mode
+targ_dir=$targ_dir
+new_dir=$new_dir
+EOF
+}
+
+SyncLang () {
+case "$1" in
+	new)
+	rm -rf $3
+	git clone $2 $3;;
+
+	update) 
+	cd $2; git pull origin master; cd $up;;
+esac
+}
+
+if [ -d $up/MIUIv5 ]; then
+	SyncLang "update" "MIUIv5"
+fi
+
+if [ -d $up/MIUI6 ]; then 
+	SyncLang "update" "MIUI6"
+fi
+
+if [ ! -f "$up/.configuration" ]; then
+	MakeConfig
+fi
