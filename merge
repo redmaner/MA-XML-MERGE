@@ -1,14 +1,8 @@
 #!/bin/bash
 # Copyright (c) 2014, Redmaner
 
-VERSION=1.0
+VERSION=1.0.2
 up=$PWD
-
-echo -e "
-#################################################
- MA-XML-MERGE V$VERSION
-#################################################
-"
 
 # Source information
 source $up/configure
@@ -19,6 +13,12 @@ if [ ! -f $up/bools ]; then
 else
 	source $up/bools
 fi
+
+echo -e "
+#################################################
+ MA-XML-MERGE V$VERSION
+#################################################
+"
 
 for apk in $(find $orig_dir -iname "*.apk" | sort); do
 	apk_name=$(basename $apk)
