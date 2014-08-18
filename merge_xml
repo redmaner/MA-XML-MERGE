@@ -2,7 +2,11 @@
 # Copyright (c) 2014, Redmaner
 
 up=$PWD
-source $up/merge.cfg
+if [ ! -f $up/bools ]; then
+	echo -e "ERROR: bools file not detected\nCopy bools.default to bools and edit it to your needs\nThen run merge again"; exit
+else
+	source $up/bools
+fi
 
 MergeStrings () {
 mkdir -p $new_string_dir
