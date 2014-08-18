@@ -15,11 +15,15 @@ cat $orig_string | sed -e '/string name="/!d' | cut -d'"' -f2 | uniq --unique | 
 	if [ $(sed -e '/name="'$string_name'"/!d' $targ_string | wc -l) -gt 0 ]; then
 		if [ $(sed -e '/name="'$string_name'"/!d' $targ_string | grep '</string>' | wc -l) -gt 0 ]; then
 			sed -e '/<string name="'$string_name'"/!d' $targ_string >> $new_string; continue
+		elif [ $(sed -e '/name="'$string_name'"/!d' $targ_string | grep '/>' | wc -l) -gt 0 ]; then
+			sed -e '/<string name="'$string_name'"/!d' $targ_string >> $new_string; continue
 		else
 			sed -e '/<string name="'$string_name'"/,/string>/!d' $targ_string >> $new_string; continue
 		fi
 	else
 		if [ $(sed -e '/name="'$string_name'"/!d' $orig_string | grep '</string>' | wc -l) -gt 0 ]; then
+			sed -e '/<string name="'$string_name'"/!d' $orig_string >> $new_string; continue
+		elif [ $(sed -e '/name="'$string_name'"/!d' $orig_string | grep '/>' | wc -l) -gt 0 ]; then
 			sed -e '/<string name="'$string_name'"/!d' $orig_string >> $new_string; continue
 		else
 			sed -e '/<string name="'$string_name'"/,/string>/!d' $orig_string >> $new_string; continue
