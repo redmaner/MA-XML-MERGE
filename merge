@@ -15,7 +15,7 @@ source $up/configure
 source $up/.configuration
 
 if [ ! -f $up/bools ]; then
-	echo -e "ERROR: bools file not detected\nCopy bools.default to bools and edit it to your needs\nThen run merge again"
+	echo -e "ERROR: bools file not detected\nCopy bools.default to bools and edit it to your needs\nThen run merge again"; exit
 else
 	source $up/bools
 fi
