@@ -13,7 +13,12 @@ echo -e "
 # Source information
 source $up/configure
 source $up/.configuration
-source $up/merge.cfg
+
+if [ ! -f $up/bools ]; then
+	echo -e "ERROR: bools file not detected\nCopy bools.default to bools and edit it to your needs\nThen run merge again"
+else
+	source $up/bools
+fi
 
 for apk in $(find $orig_dir -iname "*.apk" | sort); do
 	apk_name=$(basename $apk)
