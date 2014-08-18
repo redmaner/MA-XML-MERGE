@@ -1,3 +1,6 @@
 #!/bin/bash
 
-python=python2.7
+# Python version 2.7 is required for sort.py to work
+# On some linux distributions python2.7 and python3.0 are installed
+# Put your python 2.7 binary name here
+python=python2.7 
