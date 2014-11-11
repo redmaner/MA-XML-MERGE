@@ -69,20 +69,21 @@ echo -e "\nWhich repository (MIUI Version) do you want to use as base for your n
 echo -en "\nPlease enter your choice: "; read input
 
 case "$input" in 
-	1) SyncLang "new" "https://github.com/Acid-miuipolskapl/v5-XML-Compare" "MIUIv5"
-	   orig_dir=$up/MIUIv5/aries
+	1) orig_dir=$up/MIUIv5/aries
 	   dir_mode=auto;;
-	2) SyncLang "new" "https://github.com/Acid-miuipolskapl/v5-XML-Compare" "MIUIv5"
-	   orig_dir=$up/MIUIv5/cancro
+	   untranslateable=MIUIv5_ignorelist.xml
+	2) orig_dir=$up/MIUIv5/cancro
 	   dir_mode=auto;;
-	3) SyncLang "new" "git@github.com:Acid-miuipolskapl/v6-XML-Compare.git" "MIUI6"
-	   orig_dir=$up/MIUI6/mocha
+	   untranslateable=MIUIv5_ignorelist.xml
+	3) orig_dir=$up/MIUI6/mocha
 	   dir_mode=auto;;
-	4) SyncLang "new" "git@github.com:Acid-miuipolskapl/v6-XML-Compare.git" "MIUI6"
-	   orig_dir=$up/MIUI6/cancro
+	   untranslateable=MIUI6_ignorelist.xml
+	4) orig_dir=$up/MIUI6/cancro
 	   dir_mode=auto;;
+	   untranslateable=MIUI6_ignorelist.xml
 	5) InputPathOrig
 	   dir_mode=custom;;
+	   untranslateable=disabled
 esac
 
 InputPathTarg
@@ -110,26 +111,37 @@ aosp=$aosp
 dir_mode=$dir_mode
 targ_dir=$targ_dir
 new_dir=$new_dir
+untranslateable=$untranslateable
 EOF
 }
 
-SyncLang () {
+SyncRepo () {
 case "$1" in
 	new)
 	rm -rf $3
 	git clone $2 $3;;
 
 	update) 
-	cd $2; git pull origin master; cd $up;;
+	cd $2; git pull origin $3; cd $up;;
 esac
 }
 
 if [ -d $up/MIUIv5 ]; then
-	SyncLang "update" "MIUIv5"
+	SyncRepo "update" "MIUIv5" "master"
+else
+	SyncRepo "new" "https://github.com/Acid-miuipolskapl/v5-XML-Compare" "MIUIv5"
 fi
 
 if [ -d $up/MIUI6 ]; then 
-	SyncLang "update" "MIUI6"
+	SyncLang "update" "MIUI6" "master"
+else
+	SyncRepo "new" "https://github.com/Acid-miuipolskapl/v6-XML-Compare" "MIUIv6"
+fi
+
+if [ -d $up/resources ]; then 
+	SyncLang "update" "resources" "master"
+else
+	SyncRepo "new" "https://github.com/Redmaner/MA-XML-CHECK-RESOURCES" "resources"
 fi
 
 if [ ! -f "$up/.configuration" ]; then
