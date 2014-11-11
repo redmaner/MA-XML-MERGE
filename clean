@@ -1,7 +1,31 @@
 #!/bin/bash
 
 up=$PWD
-rm -f $up/.configuration
-rm -rf MIUIv5
-rm -rf MIUI6
-rm -rf MergedXML
+
+if [ $# -gt 0 ]; then
+	case "$1" in
+		--all) 
+		rm -f $up/.configuration
+		rm -rf $up/MIUIv5
+		rm -rf $up/MIUI6
+		rm -rf $up/MergedXML
+		rm -rf $up/resources;;
+
+		--resources)
+		rm -rf $up/resources;;
+
+		--config)
+		rm -f $up/.configuration;;
+
+		--compare_repos)
+		rm -rf $up/MIUIv5
+		rm -rf $up/MIUI6;;
+	esac
+else
+	rm -f $up/.configuration
+	rm -rf $up/MIUIv5
+	rm -rf $up/MIUI6
+	rm -rf $up/MergedXML
+	rm -rf $up/resources;;
+fi
+
