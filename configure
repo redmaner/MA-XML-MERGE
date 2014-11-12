@@ -127,7 +127,7 @@ aosp=$aosp
 dir_mode=$dir_mode
 targ_dir=$targ_dir
 new_dir=$new_dir
-untranslateable=$untranslateable
+untranslateable_list=$untranslateable
 EOF
 }
 
