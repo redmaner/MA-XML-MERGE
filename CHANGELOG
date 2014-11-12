@@ -1,0 +1,17 @@
+2.0.0
+- Change the way repositories are synced
+- Enhance clean, with multiple functions (cleans .configuration only by default)
+- Use MA-XML-CHECK-RESOURCES
+- Use MXCR file generation for more speed (same as MA-XML-CHECK)
+- Ignore untranslateable strings during merge (using MA-XML-CHECK techniques and MA-XML-CHECK-RESOURCES)
+- Some UX improvements (colors and text)
+- Some overall bugfixes and improvements
+
+1.0.2
+- Fix duplicates when merging
+- Switch fully to sed
+- Add bools requirement
+- Some small bugfixes
+
+1.0.0
+- Initial release
