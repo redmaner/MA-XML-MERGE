@@ -71,16 +71,16 @@ echo -en "\nPlease enter your choice: "; read input
 case "$input" in 
 	1) orig_dir=$up/MIUIv5/aries
 	   dir_mode=auto
-	   untranslateable=MIUIv5_ignorelist.mxcr;;
+	   untranslateable=$up/resources/MIUIv5_ignorelist.mxcr;;
 	2) orig_dir=$up/MIUIv5/cancro
 	   dir_mode=auto
-	   untranslateable=MIUIv5_ignorelist.mxcr;;
+	   untranslateable=$up/resources/MIUIv5_ignorelist.mxcr;;
 	3) orig_dir=$up/MIUI6/mocha
 	   dir_mode=auto
-	   untranslateable=MIUI6_ignorelist.mxcr;;
+	   untranslateable=$up/resources/MIUI6_ignorelist.mxcr;;
 	4) orig_dir=$up/MIUI6/cancro
 	   dir_mode=auto
-	   untranslateable=MIUI6_ignorelist.mxcr;;
+	   untranslateable=$up/resources/MIUI6_ignorelist.mxcr;;
 	5) InputPathOrig
 	   dir_mode=custom
 	   untranslateable=disabled;;
@@ -135,7 +135,7 @@ fi
 if [ -d $up/MIUI6 ]; then 
 	SyncRepo "update" "MIUI6" "master"
 else
-	SyncRepo "new" "https://github.com/Acid-miuipolskapl/v6-XML-Compare" "MIUIv6"
+	SyncRepo "new" "https://github.com/Acid-miuipolskapl/v6-XML-Compare" "MIUI6"
 fi
 
 if [ -d $up/resources ]; then 
