@@ -23,9 +23,5 @@ if [ $# -gt 0 ]; then
 	esac
 else
 	rm -f $up/.configuration
-	rm -rf $up/MIUIv5
-	rm -rf $up/MIUI6
-	rm -rf $up/MergedXML
-	rm -rf $up/resources;;
 fi
 
