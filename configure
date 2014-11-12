@@ -71,16 +71,16 @@ echo -en "\nPlease enter your choice: "; read input
 case "$input" in 
 	1) orig_dir=$up/MIUIv5/aries
 	   dir_mode=auto
-	   untranslateable=MIUIv5_ignorelist.xml;;
+	   untranslateable=MIUIv5_ignorelist.mxcr;;
 	2) orig_dir=$up/MIUIv5/cancro
 	   dir_mode=auto
-	   untranslateable=MIUIv5_ignorelist.xml;;
+	   untranslateable=MIUIv5_ignorelist.mxcr;;
 	3) orig_dir=$up/MIUI6/mocha
 	   dir_mode=auto
-	   untranslateable=MIUI6_ignorelist.xml;;
+	   untranslateable=MIUI6_ignorelist.mxcr;;
 	4) orig_dir=$up/MIUI6/cancro
 	   dir_mode=auto
-	   untranslateable=MIUI6_ignorelist.xml;;
+	   untranslateable=MIUI6_ignorelist.mxcr;;
 	5) InputPathOrig
 	   dir_mode=custom
 	   untranslateable=disabled;;
@@ -143,6 +143,9 @@ if [ -d $up/resources ]; then
 else
 	SyncRepo "new" "https://github.com/Redmaner/MA-XML-CHECK-RESOURCES" "resources"
 fi
+
+$up/res_tools --parse_ignorelist $up/resources/MIUI6_ignorelist.xml $up/resources/MIUI6_ignorelist.mxcr
+$up/res_tools --parse_ignorelist $up/resources/MIUIv5_ignorelist.xml $up/resources/MIUIv5_ignorelist.mxcr
 
 if [ ! -f "$up/.configuration" ]; then
 	MakeConfig
