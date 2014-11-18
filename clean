@@ -20,8 +20,12 @@ if [ $# -gt 0 ]; then
 		--compare_repos)
 		rm -rf $up/MIUIv5
 		rm -rf $up/MIUI6;;
+
+		--merged)
+		rm -rf $up/MergedXML;;
 	esac
 else
 	rm -f $up/.configuration
+	rm -rf $up/MergedXML
 fi
 
