@@ -21,7 +21,7 @@ sed -e '/string name="/!d' $orig_string | cut -d'"' -f2 | uniq --unique | while 
 		fi
 	fi
 
-	if [ $(sed -e '/name="'$string_name'"/!d' $orig_string | grep '@android\|@string\|@color\|@drawable' | wc -l) -gt 0 ]; then
+	if [ $(sed -e '/name="'$string_name'"/!d' $orig_string | grep '@android\|@string\|@color\|@drawable\|@null' | wc -l) -gt 0 ]; then
 		continue
 	elif [ $(sed -e '/name="'$string_name'"/!d' $orig_string | grep '@*android' | wc -l) -gt 0 ]; then
 		continue
