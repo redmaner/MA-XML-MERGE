@@ -16,7 +16,7 @@ echo -e "<?xml version='1.0' encoding='UTF-8'?>
 sed -e '/string name="/!d' $orig_string | cut -d'"' -f2 | uniq --unique | while read string_name; do
 
 	if [ -e $untranslateable_list ]; then
-		if [ $(cat $untranslateable_list | grep $apk_file' '$string_name'' | wc -l) -gt 0 ]; then
+		if [ $(cat $untranslateable_list | grep ''$apk_file' '$string_name'' | wc -l) -gt 0 ]; then
 			continue
 		fi
 	fi
