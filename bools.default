@@ -4,3 +4,8 @@
 # On some linux distributions python2.7 and python3.0 are installed
 # Put your python 2.7 binary name here
 python=python2.7 
+
+
+# If lean_merge is enabled, the merge script will leave out strings that are empty or useless to translate.
+# For example: citynames in Transfer.apk and MiuiGallery.apk.
+lean_merge=disabled

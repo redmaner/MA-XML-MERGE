@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright (c) 2014, Redmaner
 
-VERSION=2.0.0
+VERSION=2.1.0
 up=$PWD
 
 # Define bash colors for Mac OSX / Linux
@@ -28,6 +28,10 @@ if [ ! -f $up/bools ]; then
 	echo -e "${txtred}ERROR: bools file not detected\nCopy bools.default to bools and edit it to your needs\nThen run merge again${txtrst}"; exit
 else
 	source $up/bools
+fi
+
+if [ $lean_merge == "enabled" ]; then
+	source $up/lean_merge
 fi
 
 echo -e "
