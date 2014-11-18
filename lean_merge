@@ -18,7 +18,7 @@ case `uname -s` in
            ;;
 esac
 
-source $up.configuration
+source $up/.configuration
 mkdir -p $up/resources_lean 
 
 echo -e "${txtblu}\nLean merge enabled: generate lean resources${txtrst}"
