@@ -13,9 +13,25 @@ cat $TARGET_FILE | grep '<item ' | while read ignore_string; do
 done > $NEW_FILE
 }
 
+add_custom_mxcr () {
+TARGET_FILE=$1
+CUSTOM_FILE=$2
+cat $CUSTOM_FILE | grep '<item ' | while read ignore_string; do
+	ITEM_APP=$(echo $ignore_string | awk '{print $3}' | cut -d'"' -f2)
+	ITEM_FILE=$(echo $ignore_string | awk '{print $4}' | cut -d'"' -f2)
+	ITEM_NAME=$(echo $ignore_string | awk '{print $5}' | cut -d'"' -f2)
+	if [ $ITEM_FILE == "strings.xml" ]; then
+		echo ''$ITEM_APP' '$ITEM_NAME''
+	fi
+done >> $TARGET_FILE
+}
+
 if [ $# -gt 0 ]; then
 	case "$1" in
 		--parse_ignorelist)
 		parse_ignorelist_mxcr "$2" "$3";;
+
+		--add_custom)
+		add_custom_mxcr "$2" "$3";;
 	esac
 fi

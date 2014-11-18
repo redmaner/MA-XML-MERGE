@@ -167,6 +167,11 @@ echo -e "${txtblu}\nPreparing resources${txtrst}"
 $up/res_tools --parse_ignorelist $up/resources/MIUI6_ignorelist.xml $up/resources/MIUI6_ignorelist.mxcr
 $up/res_tools --parse_ignorelist $up/resources/MIUIv5_ignorelist.xml $up/resources/MIUIv5_ignorelist.mxcr
 
+if [ -e $up/resources/custom_merge.xml ]; then
+	$up/res_tools --add_custom $up/resources/MIUI6_ignorelist.mxcr $up/resources/custom_merge.xml
+	$up/res_tools --add_custom $up/resources/MIUIv5_ignorelist.mxcr $up/resources/custom_merge.xml
+fi
+
 if [ ! -f "$up/.configuration" ]; then
 	MakeConfig
 fi
