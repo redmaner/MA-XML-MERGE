@@ -1,4 +1,5 @@
 #!/bin/bash
+# Copyright (c) 2014, Redmaner
 
 # Python version 2.7 is required for sort.py to work
 # On some linux distributions python2.7 and python3.0 are installed

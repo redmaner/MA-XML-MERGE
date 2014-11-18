@@ -1,3 +1,9 @@
+2.1.1
+- Add custom_ignore_generator
+- Add lean_merge option
+- Add custom_merge.xml support 
+- Enhance untranslateable strings removal
+
 2.0.0
 - Change the way repositories are synced
 - Enhance clean, with multiple functions (cleans .configuration only by default)
