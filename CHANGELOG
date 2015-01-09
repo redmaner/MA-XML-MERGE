@@ -1,3 +1,6 @@
+3.0.0
+- Enabled multi processing (50% faster)
+
 2.1.1
 - Add custom_ignore_generator
 - Add lean_merge option
