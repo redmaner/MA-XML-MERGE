@@ -22,14 +22,20 @@ esac
 source $up/.configuration
 mkdir -p $up/resources_lean 
 
+if [ $dir_mode == custom ]; then
+	values=values-$lang_iso
+else
+	values=values
+fi
+
 echo -e "${txtblu}\nLean merge enabled: generate lean resources${txtrst}"
 if [ -d $orig_dir/MiuiGallery.apk ]; then
-	$up/custom_ignore_generator $orig_dir/MiuiGallery.apk/res/values/strings.xml $up/resources_lean/custom_merge1.xml cityname_ MiuiGallery.apk
+	$up/custom_ignore_generator $orig_dir/MiuiGallery.apk/res/$values/strings.xml $up/resources_lean/custom_merge1.xml cityname_ MiuiGallery.apk
 	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge1.xml
 fi
 if [ -d $orig_dir/Transfer.apk ]; then
-	$up/custom_ignore_generator $orig_dir/Transfer.apk/res/values/strings.xml $up/resources_lean/custom_merge2.xml country_name_ Transfer.apk
+	$up/custom_ignore_generator $orig_dir/Transfer.apk/res/$values/strings.xml $up/resources_lean/custom_merge2.xml country_name_ Transfer.apk
 	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge2.xml
-	$up/custom_ignore_generator $orig_dir/Transfer.apk/res/values/strings.xml $up/resources_lean/custom_merge3.xml deprecated_ Transfer.apk
+	$up/custom_ignore_generator $orig_dir/Transfer.apk/res/$values/strings.xml $up/resources_lean/custom_merge3.xml deprecated_ Transfer.apk
 	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge3.xml
 fi

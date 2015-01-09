@@ -99,7 +99,7 @@ case "$input" in
 	   untranslateable=$up/resources/MIUI6_ignorelist.mxcr;;
 	5) InputPathOrig
 	   dir_mode=custom
-	   untranslateable=disabled;;
+	   untranslateable=$up/resources/MIUI6_ignorelist.mxcr;;
 esac
 
 InputPathTarg
