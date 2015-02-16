@@ -36,7 +36,7 @@ sed -e '/string name="/!d' $orig_string | cut -d'"' -f2 | uniq --unique | while 
 		fi
 	fi
 
-	if [ $(sed -e '/name="'$string_name'"/!d' $orig_string | grep '@android\|@string\|@color\|@drawable\|@null' | wc -l) -gt 0 ]; then
+	if [ $(sed -e '/name="'$string_name'"/!d' $orig_string | grep '@android\|@string\|@color\|@drawable\|@null\|@plural\|@array\|@raw\|@xml' | wc -l) -gt 0 ]; then
 		continue
 	elif [ $(sed -e '/name="'$string_name'"/!d' $orig_string | grep '@*android' | wc -l) -gt 0 ]; then
 		continue
@@ -62,7 +62,7 @@ sed -e '/string name="/!d' $orig_string | cut -d'"' -f2 | uniq --unique | while 
 done
 echo '</resources>' >> $new_string
 $python $up/sort.py $new_string_dir > /dev/null
-echo -e "${txtblu}>>> Merged${txtrst} $apk_file to $new_string"
+echo -e "${txtblu}>>> Merged ${txtgrn}strings${txtrst} $apk_file to $new_string"
 }
 
 ShowHelp () {

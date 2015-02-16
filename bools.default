@@ -8,5 +8,10 @@ python=python2.7
 
 
 # If lean_merge is enabled, the merge script will leave out strings that are empty or useless to translate.
-# For example: citynames in Transfer.apk and MiuiGallery.apk.
+# For example: citynames in Transfer.apk and MiuiGallery.apk, values in arrays etc.
 lean_merge=disabled
+
+# If merge_non_exsisting is enabled, the merge script will merge / copy xml's that are not in the target repo.
+# For example Backup.apk/res/values-nl/strings.xml does not exsist in the target repo, then te merge script
+# will merge it anyway.
+merge_non_exsisting=disabled

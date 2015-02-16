@@ -1,3 +1,8 @@
+4.0.0
+- Added automated merge for arrays and plurals
+- Enhanced lean_merge greatly
+- Added option to merge non exsisting as well (see bools.default)
+
 3.0.0
 - Enabled multi processing (50% faster)
 

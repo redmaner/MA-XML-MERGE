@@ -8,9 +8,7 @@ cat $TARGET_FILE | grep '<item ' | while read ignore_string; do
 	ITEM_APP=$(echo $ignore_string | awk '{print $3}' | cut -d'"' -f2)
 	ITEM_FILE=$(echo $ignore_string | awk '{print $4}' | cut -d'"' -f2)
 	ITEM_NAME=$(echo $ignore_string | awk '{print $5}' | cut -d'"' -f2)
-	if [ $ITEM_FILE == "strings.xml" ]; then
-		echo ''$ITEM_APP' '$ITEM_NAME''
-	fi
+	echo ''$ITEM_APP' '$ITEM_NAME' '$ITEM_FILE''
 done > $NEW_FILE
 }
 
@@ -21,9 +19,7 @@ cat $CUSTOM_FILE | grep '<item ' | while read ignore_string; do
 	ITEM_APP=$(echo $ignore_string | awk '{print $3}' | cut -d'"' -f2)
 	ITEM_FILE=$(echo $ignore_string | awk '{print $4}' | cut -d'"' -f2)
 	ITEM_NAME=$(echo $ignore_string | awk '{print $5}' | cut -d'"' -f2)
-	if [ $ITEM_FILE == "strings.xml" ]; then
-		echo ''$ITEM_APP' '$ITEM_NAME''
-	fi
+	echo ''$ITEM_APP' '$ITEM_NAME' '$ITEM_FILE''
 done >> $TARGET_FILE
 }
 

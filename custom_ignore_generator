@@ -5,10 +5,11 @@ STRINGS=$1
 NEW_XML=$2
 PART_NAME=$3
 APK_NAME=$4
+XML_FILE=$5
 
 echo -e "<?xml version='1.0' encoding='UTF-8'?>
 <resources>" > $NEW_XML
-for string_name in $(cat $STRINGS | grep '<string name="' | cut -d'"' -f2 | grep "$PART_NAME"); do
-	echo '         <item folder="all" application="'$APK_NAME'" file="strings.xml" name="'$string_name'"/>'
+for string_name in $(cat $STRINGS | grep 'name="' | cut -d'"' -f2 | grep "$PART_NAME"); do
+	echo '         <item folder="all" application="'$APK_NAME'" file="'$XML_FILE'" name="'$string_name'"/>'
 done >> $NEW_XML
 echo '</resources>' >> $NEW_XML     

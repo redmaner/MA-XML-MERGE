@@ -22,14 +22,72 @@ esac
 source $up/.configuration
 mkdir -p $up/resources_lean 
 
+if [ $dir_mode == custom ]; then
+	values=values-$lang_iso
+else
+	values=values
+fi
+
+num=0
+
+count_num () {
+	num=$(expr $num + 1)
+}
+
 echo -e "${txtblu}\nLean merge enabled: generate lean resources${txtrst}"
 if [ -d $orig_dir/MiuiGallery.apk ]; then
-	$up/custom_ignore_generator $orig_dir/MiuiGallery.apk/res/values/strings.xml $up/resources_lean/custom_merge1.xml cityname_ MiuiGallery.apk
-	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge1.xml
+	count_num; $up/custom_ignore_generator $orig_dir/MiuiGallery.apk/res/$values/strings.xml $up/resources_lean/custom_merge$num.xml cityname_ MiuiGallery.apk strings.xml
+	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
 fi
 if [ -d $orig_dir/Transfer.apk ]; then
-	$up/custom_ignore_generator $orig_dir/Transfer.apk/res/values/strings.xml $up/resources_lean/custom_merge2.xml country_name_ Transfer.apk
-	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge2.xml
-	$up/custom_ignore_generator $orig_dir/Transfer.apk/res/values/strings.xml $up/resources_lean/custom_merge3.xml deprecated_ Transfer.apk
-	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge3.xml
+	count_num; $up/custom_ignore_generator $orig_dir/Transfer.apk/res/$values/strings.xml $up/resources_lean/custom_merge$num.xml country_name_ Transfer.apk strings.xml
+	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+	count_num; $up/custom_ignore_generator $orig_dir/Transfer.apk/res/$values/strings.xml $up/resources_lean/custom_merge$num.xml deprecated_ Transfer.apk strings.xml
+	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
 fi
+if [ -d $orig_dir/SecurityCenter.apk ]; then
+	count_num; $up/custom_ignore_generator $orig_dir/SecurityCenter.apk/res/$values/strings.xml $up/resources_lean/custom_merge$num.xml preference_category_key_ SecurityCenter.apk strings.xml
+	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+	count_num; $up/custom_ignore_generator $orig_dir/SecurityCenter.apk/res/$values/strings.xml $up/resources_lean/custom_merge$num.xml preference_key_ SecurityCenter.apk strings.xml
+	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+fi
+if [ -d $orig_dir/DeskClock.apk ]; then 
+	count_num; $up/custom_ignore_generator $orig_dir/DeskClock.apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml cities_names_miui DeskClock.apk arrays.xml
+	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+	count_num; $up/custom_ignore_generator $orig_dir/DeskClock.apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml timezone_alphabet_table DeskClock.apk arrays.xml
+	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+	count_num; $up/custom_ignore_generator $orig_dir/DeskClock.apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml cities_ DeskClock.apk arrays.xml
+	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+fi
+if [ -d $orig_dir/MiuiFramework.apk ]; then 
+	count_num; $up/custom_ignore_generator $orig_dir/MiuiFramework.apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml mobile_operator_ MiuiFramework.apk arrays.xml
+	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+	count_num; $up/custom_ignore_generator $orig_dir/MiuiFramework.apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml vibration_ MiuiFramework.apk arrays.xml
+	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+fi
+
+for apk in $(find $orig_dir -iname "*.apk" | sort); do
+	apk_name=$(basename $apk)
+
+	if [ -e $apk/res/$values/arrays.xml ]; then
+		count_num; $up/custom_ignore_generator $apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml _values $apk_name arrays.xml
+		$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+		count_num; $up/custom_ignore_generator $apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml _valus $apk_name arrays.xml
+		$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+		count_num; $up/custom_ignore_generator $apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml _value $apk_name arrays.xml
+		$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+		count_num; $up/custom_ignore_generator $apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml _entryValues $apk_name arrays.xml
+		$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+		count_num; $up/custom_ignore_generator $apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml _entryvalues $apk_name arrays.xml
+		$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+		count_num; $up/custom_ignore_generator $apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml _default $apk_name arrays.xml
+		$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+		count_num; $up/custom_ignore_generator $apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml entryvalues_ $apk_name arrays.xml
+		$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+		count_num; $up/custom_ignore_generator $apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml prefValues_ $apk_name arrays.xml
+		$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+	else
+		continue
+	fi
+done
+	
