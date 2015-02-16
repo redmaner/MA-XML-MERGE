@@ -34,6 +34,12 @@ if [ $lean_merge == "enabled" ]; then
 	source $up/lean_merge
 fi
 
+if [ $dir_mode == custom ]; then
+	values=values-$lang_iso
+else
+	values=values
+fi
+
 echo -e "
 #################################################
  MA-XML-MERGE V$VERSION
@@ -44,9 +50,9 @@ for apk in $(find $orig_dir -iname "*.apk" | sort -rh); do
 	apk_name=$(basename $apk)
 	if [ -d $targ_dir/$apk_name ]; then
 		if [ -f "$orig_dir/$apk_name/res/values/strings.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/strings.xml" ]; then
-			($up/merge_strings $orig_dir/$apk_name/res/values/strings.xml $targ_dir/$apk_name/res/values-$lang_iso/strings.xml $new_dir/$apk_name/res/values-$lang_iso/strings.xml $apk_name $untranslateable_list)&
+			($up/merge_strings $orig_dir/$apk_name/res/$values/strings.xml $targ_dir/$apk_name/res/values-$lang_iso/strings.xml $new_dir/$apk_name/res/values-$lang_iso/strings.xml $apk_name $untranslateable_list)&
 		elif [ -f "$orig_dir/$apk_name/res/values/strings.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso/strings.xml" ] && [ $merge_non_exsisting == "enabled" ]; then
-			($up/merge_strings $orig_dir/$apk_name/res/values/strings.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso/strings.xml $apk_name $untranslateable_list)&
+			($up/merge_strings $orig_dir/$apk_name/res/$values/strings.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso/strings.xml $apk_name $untranslateable_list)&
 		fi
 	fi
 done
@@ -56,9 +62,9 @@ for apk in $(find $orig_dir -iname "*.apk" | sort -rh); do
 	apk_name=$(basename $apk)
 	if [ -d $targ_dir/$apk_name ]; then
 		if [ -f "$orig_dir/$apk_name/res/values/arrays.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/arrays.xml" ]; then
-			($up/merge_arrays $orig_dir/$apk_name/res/values/arrays.xml $targ_dir/$apk_name/res/values-$lang_iso/arrays.xml $new_dir/$apk_name/res/values-$lang_iso/arrays.xml $apk_name $untranslateable_list)&
+			($up/merge_arrays $orig_dir/$apk_name/res/$values/arrays.xml $targ_dir/$apk_name/res/values-$lang_iso/arrays.xml $new_dir/$apk_name/res/values-$lang_iso/arrays.xml $apk_name $untranslateable_list)&
 		elif [ -f "$orig_dir/$apk_name/res/values/arrays.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso/arrays.xml" ] && [ $merge_non_exsisting == "enabled" ]; then
-			($up/merge_arrays $orig_dir/$apk_name/res/values/arrays.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso/arrays.xml $apk_name $untranslateable_list)&
+			($up/merge_arrays $orig_dir/$apk_name/res/$values/arrays.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso/arrays.xml $apk_name $untranslateable_list)&
 		fi
 	fi
 done
@@ -68,9 +74,9 @@ for apk in $(find $orig_dir -iname "*.apk" | sort -rh); do
 	apk_name=$(basename $apk)
 	if [ -d $targ_dir/$apk_name ]; then
 		if [ -f "$orig_dir/$apk_name/res/values/plurals.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/plurals.xml" ]; then
-			($up/merge_plurals $orig_dir/$apk_name/res/values/plurals.xml $targ_dir/$apk_name/res/values-$lang_iso/plurals.xml $new_dir/$apk_name/res/values-$lang_iso/plurals.xml $apk_name $untranslateable_list)&
+			($up/merge_plurals $orig_dir/$apk_name/res/$values/plurals.xml $targ_dir/$apk_name/res/values-$lang_iso/plurals.xml $new_dir/$apk_name/res/values-$lang_iso/plurals.xml $apk_name $untranslateable_list)&
 		elif [ -f "$orig_dir/$apk_name/res/values/plurals.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso/plurals.xml" ] && [ $merge_non_exsisting == "enabled" ]; then
-			($up/merge_plurals $orig_dir/$apk_name/res/values/plurals.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso/plurals.xml $apk_name $untranslateable_list)&
+			($up/merge_plurals $orig_dir/$apk_name/res/$values/plurals.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso/plurals.xml $apk_name $untranslateable_list)&
 		fi
 	fi
 done
@@ -83,7 +89,7 @@ MergeCustom () {
 custom_apk=$1
 apk_name=$2
 if [ -f "$orig_dir/$apk_name/res/values/strings.xml" ] && [ -f "$targ_dir/$custom_apk/res/values-$lang_iso/strings.xml" ]; then
-	($up/merge_strings $orig_dir/$apk_name/res/values/strings.xml $targ_dir/$custom_apk/res/values-$lang_iso/strings.xml $new_dir/$apk_name/res/values-$lang_iso/strings.xml)&
+	($up/merge_strings $orig_dir/$apk_name/res/$values/strings.xml $targ_dir/$custom_apk/res/values-$lang_iso/strings.xml $new_dir/$apk_name/res/values-$lang_iso/strings.xml)&
 fi
 }
 
