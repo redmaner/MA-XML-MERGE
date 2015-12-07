@@ -15,3 +15,6 @@ lean_merge=disabled
 # For example Backup.apk/res/values-nl/strings.xml does not exsist in the target repo, then te merge script
 # will merge it anyway.
 merge_non_exsisting=disabled
+
+# Sync target repo before starting merge
+target_git_pull=enabled

@@ -81,7 +81,9 @@ echo -e "\nWhich repository (MIUI Version) do you want to use as base for your n
  3 - MIUI6 Tablet mocha (Xiaomi MiPad)
  4 - MIUI6 Cancro (Xiaomi Mi3/Mi4)
 
- 5 - An exsisting repository on my harddrive"
+ 5 - MIUI7 Cancro (Xiaomi Mi3/Mi4)
+
+ 6 - An exsisting repository on my harddrive"
 echo -en "\nPlease enter your choice: "; read input
 
 case "$input" in 
@@ -97,9 +99,12 @@ case "$input" in
 	4) orig_dir=$up/MIUI6/cancro
 	   dir_mode=auto
 	   untranslateable=$up/resources/MIUI6_ignorelist.mxcr;;
-	5) InputPathOrig
+	5) orig_dir=$up/MIUI6/cancro
+	   dir_mode=auto
+	   untranslateable=$up/resources/MIUI7_ignorelist.mxcr;;
+	6) InputPathOrig
 	   dir_mode=custom
-	   untranslateable=$up/resources/MIUI6_ignorelist.mxcr;;
+	   untranslateable=$up/resources/MIUI7_ignorelist.mxcr;;
 esac
 
 InputPathTarg
@@ -149,7 +154,7 @@ esac
 #	SyncRepo "new" "https://github.com/Acid-miuipolskapl/v5-XML-Compare" "MIUIv5"
 #fi
 
-echo -e "${txtblu}\nSyncing v6-XML-compare (MIUI6)${txtrst}"
+echo -e "${txtblu}\nSyncing v6-XML-compare (MIUI6/MIUI7)${txtrst}"
 if [ -d $up/MIUI6 ]; then 
 	SyncRepo "update" "MIUI6" "master"
 else
@@ -165,10 +170,12 @@ fi
 
 echo -e "${txtblu}\nPreparing resources${txtrst}"
 $up/res_tools --parse_ignorelist $up/resources/MIUI6_ignorelist.xml $up/resources/MIUI6_ignorelist.mxcr
+$up/res_tools --parse_ignorelist $up/resources/MIUI7_ignorelist.xml $up/resources/MIUI7_ignorelist.mxcr
 #$up/res_tools --parse_ignorelist $up/resources/MIUIv5_ignorelist.xml $up/resources/MIUIv5_ignorelist.mxcr
 
 if [ -e $up/resources/custom_merge.xml ]; then
 	$up/res_tools --add_custom $up/resources/MIUI6_ignorelist.mxcr $up/resources/custom_merge.xml
+	$up/res_tools --add_custom $up/resources/MIUI7_ignorelist.mxcr $up/resources/custom_merge.xml
 #	$up/res_tools --add_custom $up/resources/MIUIv5_ignorelist.mxcr $up/resources/custom_merge.xml
 fi
 

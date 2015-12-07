@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright (c) 2014, Redmaner
 
-VERSION=4.0.0
+VERSION=5.0.0
 up=$PWD
 
 # Define bash colors for Mac OSX / Linux
@@ -19,6 +19,12 @@ case `uname -s` in
            txtblu='\e[0;36m' # Blue
            ;;
 esac
+
+echo -e "
+#################################################
+ MA-XML-MERGE V$VERSION
+#################################################
+"
 
 # Source information
 source $up/configure
@@ -40,18 +46,21 @@ else
 	values=values
 fi
 
-echo -e "
-#################################################
- MA-XML-MERGE V$VERSION
-#################################################
-"
+if [ $target_git_pull == "enabled" ]; then
+	target_lang_repo=$(dirname $(dirname $targ_dir))
+	echo -e "${txtblu}\nSyncing $target_lang_repo${txtrst}"
+	cd $target_lang_repo
+	git pull origin master
+	cd $up
+fi
 
+# Main event
 for apk in $(find $orig_dir -iname "*.apk" | sort -rh); do
 	apk_name=$(basename $apk)
 	if [ -d $targ_dir/$apk_name ]; then
-		if [ -f "$orig_dir/$apk_name/res/values/strings.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/strings.xml" ]; then
+		if [ -f "$orig_dir/$apk_name/res/$values/strings.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/strings.xml" ]; then
 			($up/merge_strings $orig_dir/$apk_name/res/$values/strings.xml $targ_dir/$apk_name/res/values-$lang_iso/strings.xml $new_dir/$apk_name/res/values-$lang_iso/strings.xml $apk_name $untranslateable_list)&
-		elif [ -f "$orig_dir/$apk_name/res/values/strings.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso/strings.xml" ] && [ $merge_non_exsisting == "enabled" ]; then
+		elif [ -f "$orig_dir/$apk_name/res/$values/strings.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso/strings.xml" ] && [ $merge_non_exsisting == "enabled" ]; then
 			($up/merge_strings $orig_dir/$apk_name/res/$values/strings.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso/strings.xml $apk_name $untranslateable_list)&
 		fi
 	fi
@@ -61,9 +70,9 @@ wait
 for apk in $(find $orig_dir -iname "*.apk" | sort -rh); do
 	apk_name=$(basename $apk)
 	if [ -d $targ_dir/$apk_name ]; then
-		if [ -f "$orig_dir/$apk_name/res/values/arrays.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/arrays.xml" ]; then
+		if [ -f "$orig_dir/$apk_name/res/$values/arrays.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/arrays.xml" ]; then
 			($up/merge_arrays $orig_dir/$apk_name/res/$values/arrays.xml $targ_dir/$apk_name/res/values-$lang_iso/arrays.xml $new_dir/$apk_name/res/values-$lang_iso/arrays.xml $apk_name $untranslateable_list)&
-		elif [ -f "$orig_dir/$apk_name/res/values/arrays.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso/arrays.xml" ] && [ $merge_non_exsisting == "enabled" ]; then
+		elif [ -f "$orig_dir/$apk_name/res/$values/arrays.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso/arrays.xml" ] && [ $merge_non_exsisting == "enabled" ]; then
 			($up/merge_arrays $orig_dir/$apk_name/res/$values/arrays.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso/arrays.xml $apk_name $untranslateable_list)&
 		fi
 	fi
@@ -73,9 +82,9 @@ wait
 for apk in $(find $orig_dir -iname "*.apk" | sort -rh); do
 	apk_name=$(basename $apk)
 	if [ -d $targ_dir/$apk_name ]; then
-		if [ -f "$orig_dir/$apk_name/res/values/plurals.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/plurals.xml" ]; then
+		if [ -f "$orig_dir/$apk_name/res/$values/plurals.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/plurals.xml" ]; then
 			($up/merge_plurals $orig_dir/$apk_name/res/$values/plurals.xml $targ_dir/$apk_name/res/values-$lang_iso/plurals.xml $new_dir/$apk_name/res/values-$lang_iso/plurals.xml $apk_name $untranslateable_list)&
-		elif [ -f "$orig_dir/$apk_name/res/values/plurals.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso/plurals.xml" ] && [ $merge_non_exsisting == "enabled" ]; then
+		elif [ -f "$orig_dir/$apk_name/res/$values/plurals.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso/plurals.xml" ] && [ $merge_non_exsisting == "enabled" ]; then
 			($up/merge_plurals $orig_dir/$apk_name/res/$values/plurals.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso/plurals.xml $apk_name $untranslateable_list)&
 		fi
 	fi

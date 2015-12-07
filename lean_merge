@@ -65,11 +65,28 @@ if [ -d $orig_dir/MiuiFramework.apk ]; then
 	count_num; $up/custom_ignore_generator $orig_dir/MiuiFramework.apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml vibration_ MiuiFramework.apk arrays.xml
 	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
 fi
+if [ -d $orig_dir/Backup.apk ]; then
+	count_num; $up/custom_ignore_generator $orig_dir/Backup.apk/res/$values/strings.xml $up/resources_lean/custom_merge$num.xml st_antispam_mode_ Backup.apk strings.xml
+	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+fi
+if [ -d $orig_dir/CleanMaster.apk ]; then
+	count_num; $up/custom_ignore_generator $orig_dir/CleanMaster.apk/res/$values/strings.xml $up/resources_lean/custom_merge$num.xml preference_ CleanMaster.apk strings.xml
+	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+fi
+if [ -d $orig_dir/Browser.apk ]; then
+	count_num; $up/custom_ignore_generator $orig_dir/Browser.apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml search_engine Browser.apk arrays.xml
+	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+	count_num; $up/custom_ignore_generator $orig_dir/Browser.apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml config_ Browser.apk arrays.xml
+	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+	count_num; $up/custom_ignore_generator $orig_dir/Browser.apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml bookmarks Browser.apk arrays.xml
+	$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+fi
+
 
 for apk in $(find $orig_dir -iname "*.apk" | sort); do
 	apk_name=$(basename $apk)
 
-	if [ -e $apk/res/$values/arrays.xml ]; then
+	if [ -e $apk/res/$values/arrays.xml ]; then 
 		count_num; $up/custom_ignore_generator $apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml _values $apk_name arrays.xml
 		$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
 		count_num; $up/custom_ignore_generator $apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml _valus $apk_name arrays.xml
@@ -86,6 +103,15 @@ for apk in $(find $orig_dir -iname "*.apk" | sort); do
 		$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
 		count_num; $up/custom_ignore_generator $apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml prefValues_ $apk_name arrays.xml
 		$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+		count_num; $up/custom_ignore_generator $apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml BacklightValues $apk_name arrays.xml
+		$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+		count_num; $up/custom_ignore_generator $apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml alphabet_chars $apk_name arrays.xml
+		$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+		count_num; $up/custom_ignore_generator $apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml animation_data $apk_name arrays.xml
+		$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+		count_num; $up/custom_ignore_generator $apk/res/$values/arrays.xml $up/resources_lean/custom_merge$num.xml organized_locales $apk_name arrays.xml
+		$up/res_tools --add_custom $untranslateable_list $up/resources_lean/custom_merge$num.xml
+
 	else
 		continue
 	fi
