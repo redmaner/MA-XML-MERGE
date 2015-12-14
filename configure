@@ -74,6 +74,9 @@ lang_name=$input
 echo -en "\nplease enter the iso code of your language (for example: nl): "; read input
 lang_iso=$input
 
+echo -en "\nplease enter the framework iso code of your language (for example: nl-rNL): "; read input
+lang_iso_framework=$input
+
 echo -e "\nWhich repository (MIUI Version) do you want to use as base for your new translation?
  1 - MIUIv5 aries (Xiaomi Mi2)
  2 - MIUIv5 cancro (Xiaomi Mi3/Mi4)
@@ -127,6 +130,7 @@ cat > .configuration << EOF
 
 lang_name=$lang_name
 lang_iso=$lang_iso
+lang_iso_framework=$lang_iso_framework
 orig_dir=$orig_dir
 aosp=$aosp
 dir_mode=$dir_mode

@@ -65,7 +65,7 @@ if [ -s $new_array ]; then
 	cat $new_array >> $new_array_final
 	echo '</resources>' >> $new_array_final
 	rm -f $new_array
-	echo -e "${txtblu}>>> Merged ${txtgrn}arrays${txtrst} $apk_file to $new_array_final"
+	echo -e "${txtblu}>> Merged ${txtgrn}arrays${txtrst} $apk_file to $new_array_final"
 fi
 }
 

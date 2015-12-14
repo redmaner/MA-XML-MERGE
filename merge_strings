@@ -62,7 +62,7 @@ sed -e '/string name="/!d' $orig_string | cut -d'"' -f2 | uniq --unique | while 
 done
 echo '</resources>' >> $new_string
 $python $up/sort.py $new_string_dir > /dev/null
-echo -e "${txtblu}>>> Merged ${txtgrn}strings${txtrst} $apk_file to $new_string"
+echo -e "${txtblu}>> Merged ${txtgrn}strings${txtrst} $apk_file to $new_string"
 }
 
 ShowHelp () {
