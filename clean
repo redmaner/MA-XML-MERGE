@@ -9,6 +9,7 @@ if [ $# -gt 0 ]; then
 		rm -f $up/.configuration
 		rm -rf $up/MIUIv5
 		rm -rf $up/MIUI6
+		rm -rf $up/MIUI8
 		rm -rf $up/MergedXML
 		rm -rf $up/resources;;
 
@@ -20,7 +21,8 @@ if [ $# -gt 0 ]; then
 
 		--compare_repos)
 		rm -rf $up/MIUIv5
-		rm -rf $up/MIUI6;;
+		rm -rf $up/MIUI6
+		rm -rf $up/MIUI8;;
 
 		--merged)
 		rm -rf $up/MergedXML;;

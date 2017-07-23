@@ -13,9 +13,9 @@ case `uname -s` in
            ;;
     *)
            txtrst='\e[0m' # Color off
-           txtred='\e[0;31m' # Red
-           txtgrn='\e[0;32m' # Green
-           txtblu='\e[0;36m' # Blue
+           txtred='\e[1;31m' # Red
+           txtgrn='\e[1;32m' # Green
+           txtblu='\e[1;36m' # Blue
            ;;
 esac
 
@@ -86,28 +86,54 @@ echo -e "\nWhich repository (MIUI Version) do you want to use as base for your n
 
  5 - MIUI7 Cancro (Xiaomi Mi3/Mi4)
 
- 6 - An exsisting repository on my harddrive"
+ 6 - MIUI8 Cancro (Xiaomi Mi3/Mi4)
+ 7 - MIUI8 Gemini (Xiaomi Mi5)
+
+ 8 - An exsisting repository on my harddrive"
 echo -en "\nPlease enter your choice: "; read input
 
 case "$input" in 
 	1) orig_dir=$up/MIUIv5/aries
 	   dir_mode=auto
-	   untranslateable=$up/resources/MIUIv5_ignorelist.mxcr;;
+	   lang_version=5
+	   untranslateable=$up/resources/MIUIv5_ignorelist.xml.mxcr;;
 	2) orig_dir=$up/MIUIv5/cancro
 	   dir_mode=auto
-	   untranslateable=$up/resources/MIUIv5_ignorelist.mxcr;;
+	   lang_version=5
+	   untranslateable=$up/resources/MIUIv5_ignorelist.xml.mxcr;;
 	3) orig_dir=$up/MIUI6/mocha
 	   dir_mode=auto
-	   untranslateable=$up/resources/MIUI6_ignorelist.mxcr;;
+	   lang_version=6
+	   auto_ignorelist=$up/resources/MIUI6_auto_ignorelist.xml
+	   untranslateable=$up/resources/MIUI6_ignorelist.xml.mxcr;;
 	4) orig_dir=$up/MIUI6/cancro
 	   dir_mode=auto
-	   untranslateable=$up/resources/MIUI6_ignorelist.mxcr;;
+	   lang_version=6
+	   auto_ignorelist=$up/resources/MIUI6_auto_ignorelist.xml
+	   untranslateable=$up/resources/MIUI6_ignorelist.xml.mxcr;;
 	5) orig_dir=$up/MIUI6/cancro
 	   dir_mode=auto
-	   untranslateable=$up/resources/MIUI7_ignorelist.mxcr;;
-	6) InputPathOrig
+	   lang_version=7
+	   auto_ignorelist=$up/resources/MIUI7_auto_ignorelist.xml
+	   untranslateable=$up/resources/MIUI7_ignorelist.xml.mxcr;;
+	6) orig_dir=$up/MIUI8/cancro
+	   dir_mode=auto
+	   lang_version=8
+	   untranslateable=$up/resources/MIUI8_ignorelist.xml.mxcr
+	   auto_ignorelist=$up/resources/MIUI8_auto_ignorelist.xml
+	   value_catcher=$up/resources/MIUI8_value_catcher.sh;;
+	7) orig_dir=$up/MIUI8/cancro
+	   dir_mode=auto
+	   lang_version=8
+	   untranslateable=$up/resources/MIUI8_ignorelist.xml.mxcr
+	   auto_ignorelist=$up/resources/MIUI8_auto_ignorelist.xml
+	   value_catcher=$up/resources/MIUI8_value_catcher.sh;;
+	8) InputPathOrig
 	   dir_mode=custom
-	   untranslateable=$up/resources/MIUI7_ignorelist.mxcr;;
+	   lang_version=8
+	   untranslateable=$up/resources/MIUI8_ignorelist.xml.mxcr
+	   auto_ignorelist=$up/resources/MIUI8_auto_ignorelist.xml
+	   value_catcher=$up/resources/MIUI8_value_catcher.sh;;
 esac
 
 InputPathTarg
@@ -128,6 +154,7 @@ echo -e "\nConfiguration complete, thank you"
 cat > .configuration << EOF
 #!/bin/bash
 
+lang_version=$lang_version
 lang_name=$lang_name
 lang_iso=$lang_iso
 lang_iso_framework=$lang_iso_framework
@@ -137,6 +164,8 @@ dir_mode=$dir_mode
 targ_dir=$targ_dir
 new_dir=$new_dir
 untranslateable_list=$untranslateable
+auto_ignorelist=$auto_ignorelist
+value_catcher=$value_catcher
 EOF
 }
 
@@ -165,6 +194,13 @@ else
 	SyncRepo "new" "https://github.com/Acid-miuipolskapl/v6-XML-Compare" "MIUI6"
 fi
 
+echo -e "${txtblu}\nSyncing v8-XML-compare (MIUI8)${txtrst}"
+if [ -d $up/MIUI8 ]; then 
+	SyncRepo "update" "MIUI8" "master"
+else
+	SyncRepo "new" "https://github.com/Acid-miuipolskapl/v8-XML-Compare" "MIUI8"
+fi
+
 echo -e "${txtblu}\nSyncing resources${txtrst}"
 if [ -d $up/resources ]; then 
 	SyncRepo "update" "resources" "master"
@@ -173,15 +209,18 @@ else
 fi
 
 echo -e "${txtblu}\nPreparing resources${txtrst}"
-$up/res_tools --parse_ignorelist $up/resources/MIUI6_ignorelist.xml $up/resources/MIUI6_ignorelist.mxcr
-$up/res_tools --parse_ignorelist $up/resources/MIUI7_ignorelist.xml $up/resources/MIUI7_ignorelist.mxcr
-#$up/res_tools --parse_ignorelist $up/resources/MIUIv5_ignorelist.xml $up/resources/MIUIv5_ignorelist.mxcr
-
-if [ -e $up/resources/custom_merge.xml ]; then
-	$up/res_tools --add_custom $up/resources/MIUI6_ignorelist.mxcr $up/resources/custom_merge.xml
-	$up/res_tools --add_custom $up/resources/MIUI7_ignorelist.mxcr $up/resources/custom_merge.xml
-#	$up/res_tools --add_custom $up/resources/MIUIv5_ignorelist.mxcr $up/resources/custom_merge.xml
-fi
+cat $up/resources/resources.xml | grep 'preparse="true"' | while read preparse_entry; do
+	preparse_file=$(echo $preparse_entry | cut -d' ' -f2 | cut -d'"' -f2)
+	if [ -e $up/resources/$preparse_file.md5 ]; then
+		if [ $(md5sum $up/resources/$preparse_file | cut -d' ' -f1) != $(cat $up/resources/$preparse_file.md5) ]; then
+			md5sum $up/resources/$preparse_file | cut -d' ' -f1 > $up/resources/$preparse_file.md5
+			$up/res_tools --parse_ignorelist $up/resources/$preparse_file $up/resources/$preparse_file.mxcr
+		fi
+	else 
+		md5sum $up/resources/$preparse_file | cut -d' ' -f1 > $up/resources/$preparse_file.md5
+		$up/res_tools --parse_ignorelist $up/resources/$preparse_file $up/resources/$preparse_file.mxcr
+	fi
+done
 
 if [ ! -f "$up/.configuration" ]; then
 	MakeConfig

@@ -14,9 +14,9 @@ case `uname -s` in
            ;;
     *)
            txtrst='\e[0m' # Color off
-           txtred='\e[0;31m' # Red
-           txtgrn='\e[0;32m' # Green
-           txtblu='\e[0;36m' # Blue
+           txtred='\e[1;31m' # Red
+           txtgrn='\e[1;32m' # Green
+           txtblu='\e[1;36m' # Blue
            ;;
 esac
 
@@ -34,10 +34,6 @@ if [ ! -f $up/bools ]; then
 	echo -e "${txtred}ERROR: bools file not detected\nCopy bools.default to bools and edit it to your needs\nThen run merge again${txtrst}"; exit
 else
 	source $up/bools
-fi
-
-if [ $lean_merge == "enabled" ]; then
-	source $up/lean_merge
 fi
 
 if [ $dir_mode == custom ]; then
@@ -136,3 +132,7 @@ if [ "$aosp" == "yes" ]; then
 	MergeCustom "Music2.apk" "Music.apk"
 	MergeCustom "SystemUI.apk" "MiuiSystemUI.apk"
 fi	
+
+if [ $post_clean == "enabled" ]; then
+	source $up/post_clean
+fi

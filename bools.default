@@ -6,15 +6,13 @@
 # Put your python 2.7 binary name here
 python=python2.7 
 
-
-# If lean_merge is enabled, the merge script will leave out strings that are empty or useless to translate.
-# For example: citynames in Transfer.apk and MiuiGallery.apk, values in arrays etc.
-lean_merge=disabled
-
 # If merge_non_exsisting is enabled, the merge script will merge / copy xml's that are not in the target repo.
 # For example Backup.apk/res/values-nl/strings.xml does not exsist in the target repo, then te merge script
 # will merge it anyway.
 merge_non_exsisting=disabled
+
+# If post_clean is enabled, all strings and arrays that are defined untranslateable will be removed automatically
+post_clean=disabled
 
 # Sync target repo before starting merge
 target_git_pull=enabled
@@ -25,4 +23,4 @@ translate_framework=enabled
 
 # Max processes: the amount of sub-processes the script is able to run.
 # Feference point is 4 a 6 sub-processes per CPU core.
-max_processes=12
+max_processes=16
