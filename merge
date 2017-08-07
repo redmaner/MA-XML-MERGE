@@ -58,6 +58,7 @@ done
 
 
 # Main event
+SingleMerge () {
 for apk in $(find $orig_dir -iname "*.apk" | sort -rh); do
 	apk_name=$(basename $apk)
 	if [ -d $targ_dir/$apk_name ] && [ $(cat $up/framework_list_strings | grep ''$apk_name'' | wc -l) == 0 ]; then
@@ -112,7 +113,6 @@ for apk in $(find $orig_dir -iname "*.apk" | sort -rh); do
 done
 wait
 
-
 # MergeCustom: Function to merge non matching apk's.
 # For example AOSP applications: SystemUI.apk is equal to MiuiSystemUI.apk
 MergeCustom () {
@@ -133,6 +133,130 @@ if [ "$aosp" == "yes" ]; then
 	MergeCustom "SystemUI.apk" "MiuiSystemUI.apk"
 fi	
 
+}
+
+# Main event dual merge
+DualMerge () {
+
+# Make one list of all apks in both repositories
+find $orig_dir -iname "*.apk" | sort -rh | while read apk; do
+	basename $apk 
+done > $up/dual_merge_apk_list
+find $orig_dir_second -iname "*.apk" | sort -rh | while read apk; do
+	basename $apk
+done >> $up/dual_merge_apk_list
+cat $up/dual_merge_apk_list | sort | uniq > $up/dual_merge_apk.list && rm $up/dual_merge_apk_list
+
+cat $up/dual_merge_apk.list | while read apk_name; do
+	if [ -d $targ_dir/$apk_name ] && [ $(cat $up/framework_list_strings | grep ''$apk_name'' | wc -l) == 0 ]; then
+		if [ -f "$orig_dir/$apk_name/res/$values/strings.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/strings.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/strings.xml" ]; then
+			max_proces; ($up/merge_strings $orig_dir/$apk_name/res/$values/strings.xml $targ_dir/$apk_name/res/values-$lang_iso/strings.xml $new_dir/$apk_name/res/values-$lang_iso/strings.xml $apk_name $untranslateable_list $dual_merge $orig_dir_second/$apk_name/res/$values/strings.xml)&
+		elif [ -f "$orig_dir/$apk_name/res/$values/strings.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/strings.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso/strings.xml" ]; then
+			max_proces; ($up/merge_strings $orig_dir/$apk_name/res/$values/strings.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso/strings.xml $apk_name $untranslateable_list $dual_merge $orig_dir_second/$apk_name/res/$values/strings.xml)&
+		elif [ -f "$orig_dir/$apk_name/res/$values/strings.xml" ] && [ ! -f "$orig_dir_second/$apk_name/res/$values/strings.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/strings.xml" ]; then
+			max_proces; ($up/merge_strings $orig_dir/$apk_name/res/$values/strings.xml $targ_dir/$apk_name/res/values-$lang_iso/strings.xml $new_dir/$apk_name/res/values-$lang_iso/strings.xml $apk_name $untranslateable_list false)&
+		elif [ -f "$orig_dir/$apk_name/res/$values/strings.xml" ] && [ ! -f "$orig_dir_second/$apk_name/res/$values/strings.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso/strings.xml" ]; then
+			max_proces; ($up/merge_strings $orig_dir/$apk_name/res/$values/strings.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso/strings.xml $apk_name $untranslateable_list false)&
+		elif [ ! -f "$orig_dir/$apk_name/res/$values/strings.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/strings.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/strings.xml" ]; then
+			max_proces; ($up/merge_strings $orig_dir_second/$apk_name/res/$values/strings.xml $targ_dir/$apk_name/res/values-$lang_iso/strings.xml $new_dir/$apk_name/res/values-$lang_iso/strings.xml $apk_name $untranslateable_list false)&
+		elif [ ! -f "$orig_dir/$apk_name/res/$values/strings.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/strings.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso/strings.xml" ]; then
+			max_proces; ($up/merge_strings $orig_dir_second/$apk_name/res/$values/strings.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso/strings.xml $apk_name $untranslateable_list false)&
+		fi
+	elif [ -d $targ_dir/$apk_name ] && [ $(cat $up/framework_list_strings | grep ''$apk_name'' | wc -l) -gt 0 ] && [ "$translate_framework" == "enabled" ]; then
+		if [ -f "$orig_dir/$apk_name/res/$values/strings.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/strings.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso_framework/strings.xml" ]; then
+			max_proces; ($up/merge_strings $orig_dir/$apk_name/res/$values/strings.xml $targ_dir/$apk_name/res/values-$lang_iso_framework/strings.xml $new_dir/$apk_name/res/values-$lang_iso_framework/strings.xml $apk_name $untranslateable_list $dual_merge $orig_dir_second/$apk_name/res/$values/strings.xml)&
+		elif [ -f "$orig_dir/$apk_name/res/$values/strings.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/strings.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso_framework/strings.xml" ]; then
+			max_proces; ($up/merge_strings $orig_dir/$apk_name/res/$values/strings.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso_framework/strings.xml $apk_name $untranslateable_list $dual_merge $orig_dir_second/$apk_name/res/$values/strings.xml)&
+		elif [ -f "$orig_dir/$apk_name/res/$values/strings.xml" ] && [ ! -f "$orig_dir_second/$apk_name/res/$values/strings.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso_framework/strings.xml" ]; then
+			max_proces; ($up/merge_strings $orig_dir/$apk_name/res/$values/strings.xml $targ_dir/$apk_name/res/values-$lang_iso_framework/strings.xml $new_dir/$apk_name/res/values-$lang_iso_framework/strings.xml $apk_name $untranslateable_list false)&
+		elif [ -f "$orig_dir/$apk_name/res/$values/strings.xml" ] && [ ! -f "$orig_dir_second/$apk_name/res/$values/strings.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso_framework/strings.xml" ]; then
+			max_proces; ($up/merge_strings $orig_dir/$apk_name/res/$values/strings.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso_framework/strings.xml $apk_name $untranslateable_list false)&
+		elif [ ! -f "$orig_dir/$apk_name/res/$values/strings.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/strings.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso_framework/strings.xml" ]; then
+			max_proces; ($up/merge_strings $orig_dir_second/$apk_name/res/$values/strings.xml $targ_dir/$apk_name/res/values-$lang_iso_framework/strings.xml $new_dir/$apk_name/res/values-$lang_iso_framework/strings.xml $apk_name $untranslateable_list false)&
+		elif [ ! -f "$orig_dir/$apk_name/res/$values/strings.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/strings.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso_framework/strings.xml" ]; then
+			max_proces; ($up/merge_strings $orig_dir_second/$apk_name/res/$values/strings.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso_framework/strings.xml $apk_name $untranslateable_list false)&
+		fi
+	fi
+done
+wait
+
+cat $up/dual_merge_apk.list | while read apk_name; do
+	if [ -d $targ_dir/$apk_name ] && [ $(cat $up/framework_list_strings | grep ''$apk_name'' | wc -l) == 0 ]; then
+		if [ -f "$orig_dir/$apk_name/res/$values/arrays.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/arrays.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/arrays.xml" ]; then
+			max_proces; ($up/merge_arrays $orig_dir/$apk_name/res/$values/arrays.xml $targ_dir/$apk_name/res/values-$lang_iso/arrays.xml $new_dir/$apk_name/res/values-$lang_iso/arrays.xml $apk_name $untranslateable_list $dual_merge $orig_dir_second/$apk_name/res/$values/arrays.xml)&
+		elif [ -f "$orig_dir/$apk_name/res/$values/arrays.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/arrays.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso/arrays.xml" ]; then
+			max_proces; ($up/merge_arrays $orig_dir/$apk_name/res/$values/arrays.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso/arrays.xml $apk_name $untranslateable_list $dual_merge $orig_dir_second/$apk_name/res/$values/arrays.xml)&
+		elif [ -f "$orig_dir/$apk_name/res/$values/arrays.xml" ] && [ ! -f "$orig_dir_second/$apk_name/res/$values/arrays.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/arrays.xml" ]; then
+			max_proces; ($up/merge_arrays $orig_dir/$apk_name/res/$values/arrays.xml $targ_dir/$apk_name/res/values-$lang_iso/arrays.xml $new_dir/$apk_name/res/values-$lang_iso/arrays.xml $apk_name $untranslateable_list false)&
+		elif [ -f "$orig_dir/$apk_name/res/$values/arrays.xml" ] && [ ! -f "$orig_dir_second/$apk_name/res/$values/arrays.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso/arrays.xml" ]; then
+			max_proces; ($up/merge_arrays $orig_dir/$apk_name/res/$values/arrays.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso/arrays.xml $apk_name $untranslateable_list false)&
+		elif [ ! -f "$orig_dir/$apk_name/res/$values/arrays.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/arrays.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/arrays.xml" ]; then
+			max_proces; ($up/merge_arrays $orig_dir_second/$apk_name/res/$values/arrays.xml $targ_dir/$apk_name/res/values-$lang_iso/arrays.xml $new_dir/$apk_name/res/values-$lang_iso/arrays.xml $apk_name $untranslateable_list false)&
+		elif [ ! -f "$orig_dir/$apk_name/res/$values/arrays.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/arrays.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso/arrays.xml" ]; then
+			max_proces; ($up/merge_arrays $orig_dir_second/$apk_name/res/$values/arrays.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso/arrays.xml $apk_name $untranslateable_list false)&
+		fi
+	elif [ -d $targ_dir/$apk_name ] && [ $(cat $up/framework_list_strings | grep ''$apk_name'' | wc -l) -gt 0 ] && [ "$translate_framework" == "enabled" ]; then
+		if [ -f "$orig_dir/$apk_name/res/$values/arrays.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/arrays.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso_framework/arrays.xml" ]; then
+			max_proces; ($up/merge_arrays $orig_dir/$apk_name/res/$values/arrays.xml $targ_dir/$apk_name/res/values-$lang_iso_framework/arrays.xml $new_dir/$apk_name/res/values-$lang_iso_framework/arrays.xml $apk_name $untranslateable_list $dual_merge $orig_dir_second/$apk_name/res/$values/arrays.xml)&
+		elif [ -f "$orig_dir/$apk_name/res/$values/arrays.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/arrays.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso_framework/arrays.xml" ]; then
+			max_proces; ($up/merge_arrays $orig_dir/$apk_name/res/$values/arrays.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso_framework/arrays.xml $apk_name $untranslateable_list $dual_merge $orig_dir_second/$apk_name/res/$values/arrays.xml)&
+		elif [ -f "$orig_dir/$apk_name/res/$values/arrays.xml" ] && [ ! -f "$orig_dir_second/$apk_name/res/$values/arrays.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso_framework/arrays.xml" ]; then
+			max_proces; ($up/merge_arrays $orig_dir/$apk_name/res/$values/arrays.xml $targ_dir/$apk_name/res/values-$lang_iso_framework/arrays.xml $new_dir/$apk_name/res/values-$lang_iso_framework/arrays.xml $apk_name $untranslateable_list false)&
+		elif [ -f "$orig_dir/$apk_name/res/$values/arrays.xml" ] && [ ! -f "$orig_dir_second/$apk_name/res/$values/arrays.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso_framework/arrays.xml" ]; then
+			max_proces; ($up/merge_arrays $orig_dir/$apk_name/res/$values/arrays.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso_framework/arrays.xml $apk_name $untranslateable_list false)&
+		elif [ ! -f "$orig_dir/$apk_name/res/$values/arrays.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/arrays.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso_framework/arrays.xml" ]; then
+			max_proces; ($up/merge_arrays $orig_dir_second/$apk_name/res/$values/arrays.xml $targ_dir/$apk_name/res/values-$lang_iso_framework/arrays.xml $new_dir/$apk_name/res/values-$lang_iso_framework/arrays.xml $apk_name $untranslateable_list false)&
+		elif [ ! -f "$orig_dir/$apk_name/res/$values/arrays.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/arrays.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso_framework/arrays.xml" ]; then
+			max_proces; ($up/merge_arrays $orig_dir_second/$apk_name/res/$values/arrays.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso_framework/arrays.xml $apk_name $untranslateable_list false)&
+		fi
+	fi
+done
+wait
+
+cat $up/dual_merge_apk.list | while read apk_name; do
+	if [ -d $targ_dir/$apk_name ] && [ $(cat $up/framework_list_strings | grep ''$apk_name'' | wc -l) == 0 ]; then
+		if [ -f "$orig_dir/$apk_name/res/$values/plurals.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/plurals.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/plurals.xml" ]; then
+			max_proces; ($up/merge_plurals $orig_dir/$apk_name/res/$values/plurals.xml $targ_dir/$apk_name/res/values-$lang_iso/plurals.xml $new_dir/$apk_name/res/values-$lang_iso/plurals.xml $apk_name $untranslateable_list $dual_merge $orig_dir_second/$apk_name/res/$values/plurals.xml)&
+		elif [ -f "$orig_dir/$apk_name/res/$values/plurals.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/plurals.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso/plurals.xml" ]; then
+			max_proces; ($up/merge_plurals $orig_dir/$apk_name/res/$values/plurals.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso/plurals.xml $apk_name $untranslateable_list $dual_merge $orig_dir_second/$apk_name/res/$values/plurals.xml)&
+		elif [ -f "$orig_dir/$apk_name/res/$values/plurals.xml" ] && [ ! -f "$orig_dir_second/$apk_name/res/$values/plurals.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/plurals.xml" ]; then
+			max_proces; ($up/merge_plurals $orig_dir/$apk_name/res/$values/plurals.xml $targ_dir/$apk_name/res/values-$lang_iso/plurals.xml $new_dir/$apk_name/res/values-$lang_iso/plurals.xml $apk_name $untranslateable_list false)&
+		elif [ -f "$orig_dir/$apk_name/res/$values/plurals.xml" ] && [ ! -f "$orig_dir_second/$apk_name/res/$values/plurals.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso/plurals.xml" ]; then
+			max_proces; ($up/merge_plurals $orig_dir/$apk_name/res/$values/plurals.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso/plurals.xml $apk_name $untranslateable_list false)&
+		elif [ ! -f "$orig_dir/$apk_name/res/$values/plurals.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/plurals.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso/plurals.xml" ]; then
+			max_proces; ($up/merge_plurals $orig_dir_second/$apk_name/res/$values/plurals.xml $targ_dir/$apk_name/res/values-$lang_iso/plurals.xml $new_dir/$apk_name/res/values-$lang_iso/plurals.xml $apk_name $untranslateable_list false)&
+		elif [ ! -f "$orig_dir/$apk_name/res/$values/plurals.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/plurals.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso/plurals.xml" ]; then
+			max_proces; ($up/merge_plurals $orig_dir_second/$apk_name/res/$values/plurals.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso/plurals.xml $apk_name $untranslateable_list false)&
+		fi
+	elif [ -d $targ_dir/$apk_name ] && [ $(cat $up/framework_list_strings | grep ''$apk_name'' | wc -l) -gt 0 ] && [ "$translate_framework" == "enabled" ]; then
+		if [ -f "$orig_dir/$apk_name/res/$values/plurals.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/plurals.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso_framework/plurals.xml" ]; then
+			max_proces; ($up/merge_plurals $orig_dir/$apk_name/res/$values/plurals.xml $targ_dir/$apk_name/res/values-$lang_iso_framework/plurals.xml $new_dir/$apk_name/res/values-$lang_iso_framework/plurals.xml $apk_name $untranslateable_list $dual_merge $orig_dir_second/$apk_name/res/$values/plurals.xml)&
+		elif [ -f "$orig_dir/$apk_name/res/$values/plurals.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/plurals.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso_framework/plurals.xml" ]; then
+			max_proces; ($up/merge_plurals $orig_dir/$apk_name/res/$values/plurals.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso_framework/plurals.xml $apk_name $untranslateable_list $dual_merge $orig_dir_second/$apk_name/res/$values/plurals.xml)&
+		elif [ -f "$orig_dir/$apk_name/res/$values/plurals.xml" ] && [ ! -f "$orig_dir_second/$apk_name/res/$values/plurals.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso_framework/plurals.xml" ]; then
+			max_proces; ($up/merge_plurals $orig_dir/$apk_name/res/$values/plurals.xml $targ_dir/$apk_name/res/values-$lang_iso_framework/plurals.xml $new_dir/$apk_name/res/values-$lang_iso_framework/plurals.xml $apk_name $untranslateable_list false)&
+		elif [ -f "$orig_dir/$apk_name/res/$values/plurals.xml" ] && [ ! -f "$orig_dir_second/$apk_name/res/$values/plurals.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso_framework/plurals.xml" ]; then
+			max_proces; ($up/merge_plurals $orig_dir/$apk_name/res/$values/plurals.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso_framework/plurals.xml $apk_name $untranslateable_list false)&
+		elif [ ! -f "$orig_dir/$apk_name/res/$values/plurals.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/plurals.xml" ] && [ -f "$targ_dir/$apk_name/res/values-$lang_iso_framework/plurals.xml" ]; then
+			max_proces; ($up/merge_plurals $orig_dir_second/$apk_name/res/$values/plurals.xml $targ_dir/$apk_name/res/values-$lang_iso_framework/plurals.xml $new_dir/$apk_name/res/values-$lang_iso_framework/plurals.xml $apk_name $untranslateable_list false)&
+		elif [ ! -f "$orig_dir/$apk_name/res/$values/plurals.xml" ] && [ -f "$orig_dir_second/$apk_name/res/$values/plurals.xml" ] && [ ! -f "$targ_dir/$apk_name/res/values-$lang_iso_framework/plurals.xml" ]; then
+			max_proces; ($up/merge_plurals $orig_dir_second/$apk_name/res/$values/plurals.xml $up/dummy.xml $new_dir/$apk_name/res/values-$lang_iso_framework/plurals.xml $apk_name $untranslateable_list false)&
+		fi
+	fi
+done
+wait
+}
+
+# Single or dual merge
+if [ $dual_merge == true ]; then
+	DualMerge
+else
+	SingleMerge
+fi
+
+wait; sleep 60
 if [ $post_clean == "enabled" ]; then
 	source $up/post_clean
 fi
+
+$python $up/sort.py $new_dir > /dev/null

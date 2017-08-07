@@ -65,18 +65,42 @@ fi
 }
 
 MakeConfig () {
-echo -e "\nThis tool merges exsisting XML translations into new XML's and is designed for Xiaomi.eu translation repositories.
-This tool requires some information to work properly and only works for the main folder."
+InputPathTarg
 
-echo -en "\nPlease enter the name of your language (for example: Dutch): "; read input
-lang_name=$input
+echo -e "Where do the new strings.xml need to go?
+ 1 - New folder/repository
+ 2 - Exsisting repository
 
-echo -en "\nplease enter the iso code of your language (for example: nl): "; read input
-lang_iso=$input
+WARNING: If you select an exsising repository files could be overwritten by merge"
+echo -en "\nPlease enter your choice: "; read input
 
-echo -en "\nplease enter the framework iso code of your language (for example: nl-rNL): "; read input
-lang_iso_framework=$input
+case "$input" in
+	1) new_dir=$up/MergedXML/$lang_name/main;;
+	2) InputPathNew;;
+esac
 
+echo -e "\nConfiguration complete, thank you"
+cat > .configuration << EOF
+#!/bin/bash
+
+lang_version=$lang_version
+lang_name=$lang_name
+lang_iso=$lang_iso
+lang_iso_framework=$lang_iso_framework
+orig_dir=$orig_dir
+orig_dir_second=$orig_dir_second
+dual_merge=$dual_merge
+aosp=$aosp
+dir_mode=$dir_mode
+targ_dir=$targ_dir
+new_dir=$new_dir
+untranslateable_list=$untranslateable
+auto_ignorelist=$auto_ignorelist
+value_catcher=$value_catcher
+EOF
+}
+
+MakeConfigSingleMerge () {
 echo -e "\nWhich repository (MIUI Version) do you want to use as base for your new translation?
  1 - MIUIv5 aries (Xiaomi Mi2)
  2 - MIUIv5 cancro (Xiaomi Mi3/Mi4)
@@ -135,38 +159,51 @@ case "$input" in
 	   auto_ignorelist=$up/resources/MIUI8_auto_ignorelist.xml
 	   value_catcher=$up/resources/MIUI8_value_catcher.sh;;
 esac
+dual_merge=false
+orig_dir_second=
+MakeConfig
+}
 
-InputPathTarg
-
-echo -e "Where do the new strings.xml need to go?
- 1 - New folder/repository
- 2 - Exsisting repository
-
-WARNING: If you select an exsising repository files could be overwritten by merge"
+MakeConfigDualMerge () {
+echo -e "\nWhich two repositories (MIUI Version) do you want to use as base for your new translation?
+ 1 - MIUI8 Gemini and MIUI8 sagit"
 echo -en "\nPlease enter your choice: "; read input
 
-case "$input" in
-	1) new_dir=$up/MergedXML/$lang_name/main;;
-	2) InputPathNew;;
+case "$input" in 
+	1) 
+	orig_dir=$up/MIUI8/gemini
+	orig_dir_second=$up/MIUI8/sagit
+	dual_merge=true
+	dir_mode=auto
+	lang_version=8
+	untranslateable=$up/resources/MIUI8_ignorelist.xml.mxcr
+	auto_ignorelist=$up/resources/MIUI8_auto_ignorelist.xml
+	value_catcher=$up/resources/MIUI8_value_catcher.sh;;
 esac
 
-echo -e "\nConfiguration complete, thank you"
-cat > .configuration << EOF
-#!/bin/bash
+MakeConfig
+}
 
-lang_version=$lang_version
-lang_name=$lang_name
-lang_iso=$lang_iso
-lang_iso_framework=$lang_iso_framework
-orig_dir=$orig_dir
-aosp=$aosp
-dir_mode=$dir_mode
-targ_dir=$targ_dir
-new_dir=$new_dir
-untranslateable_list=$untranslateable
-auto_ignorelist=$auto_ignorelist
-value_catcher=$value_catcher
-EOF
+MakeConfigInit () {
+echo -e "\nThis tool merges exsisting XML translations into new XML's and is designed for Xiaomi.eu translation repositories.
+This tool requires some information to work properly and only works for the main folder."
+
+echo -en "\nPlease enter the name of your language (for example: Dutch): "; read input
+lang_name=$input
+
+echo -en "\nplease enter the iso code of your language (for example: nl): "; read input
+lang_iso=$input
+
+echo -en "\nplease enter the framework iso code of your language (for example: nl-rNL): "; read input
+lang_iso_framework=$input
+
+echo -en "\nplease select merge type: 
+ 1 - Single repository
+ 2 - Two repositories "; read input
+case "$input" in
+	1) MakeConfigSingleMerge;;
+	2) MakeConfigDualMerge;;
+esac
 }
 
 SyncRepo () {
@@ -223,5 +260,5 @@ cat $up/resources/resources.xml | grep 'preparse="true"' | while read preparse_e
 done
 
 if [ ! -f "$up/.configuration" ]; then
-	MakeConfig
+	MakeConfigInit
 fi

@@ -31,20 +31,6 @@ grep '<array\|<integer-array\|<string-array' $orig_array | uniq --unique | while
 	array_type=$(echo $array | cut -d'<' -f2 | cut -d' ' -f1)
 	array_name=$(echo $array | cut -d'"' -f2)
 
-	if [ -e $untranslateable_list ]; then
-		if [ $(cat $untranslateable_list | grep ''$apk_file' '$array_name' arrays.xml' | wc -l) -gt 0 ]; then
-			continue
-		fi
-	fi
-	
-#	if [ "`grep "$array" $orig_array | grep '/>'`" == "" ]; then
-		if [ $(sed -e '/<'$array_type' name="'$array_name'"/,/'$array_type'>/!d' $orig_array | grep '@android\|@string\|@color\|@drawable\|@null\|@plural\|@array\|@raw\|@xml' | wc -l) -gt 0 ]; then
-			continue
-		elif [ $(sed -e '/<'$array_type' name="'$array_name'"/,/'$array_type'>/!d' $orig_array | grep '@*android' | wc -l) -gt 0 ]; then
-			continue
-		fi
-#	fi
-
 	if [ $(sed -e '/name="'$array_name'"/!d' $targ_array | wc -l) -gt 0 ]; then
 		if [ $(sed -e '/name="'$array_name'"/!d' $targ_array | grep '/>' | wc -l) -gt 0 ]; then
 			sed -e '/<'$array_type' name="'$array_name'"/!d' $targ_array >> $new_array; continue
@@ -59,6 +45,29 @@ grep '<array\|<integer-array\|<string-array' $orig_array | uniq --unique | while
 		fi
 	fi
 done
+if [ $dual_merge == true ]; then
+	grep '<array\|<integer-array\|<string-array' $orig_array_second | uniq --unique | while read array; do
+
+		array_type=$(echo $array | cut -d'<' -f2 | cut -d' ' -f1)
+		array_name=$(echo $array | cut -d'"' -f2)
+
+		if [ $(sed -e '/name="'$array_name'"/!d' $orig_array | wc -l) -gt 0 ]; then
+			continue
+		elif [ $(sed -e '/name="'$array_name'"/!d' $targ_array | wc -l) -gt 0 ]; then
+			if [ $(sed -e '/name="'$array_name'"/!d' $targ_array | grep '/>' | wc -l) -gt 0 ]; then
+				sed -e '/<'$array_type' name="'$array_name'"/!d' $targ_array >> $new_array; continue
+			else
+				sed -e '/<'$array_type' name="'$array_name'"/,/'$array_type'>/!d' $targ_array >> $new_array; continue
+			fi
+		else
+			if [ $(sed -e '/name="'$array_name'"/!d' $orig_array_second | grep '/>' | wc -l) -gt 0 ]; then
+				sed -e '/<'$array_type' name="'$array_name'"/!d' $orig_array_second >> $new_array; continue
+			else	
+				sed -e '/<'$array_type' name="'$array_name'"/,/'$array_type'>/!d' $orig_array_second >> $new_array; continue
+			fi
+		fi
+	done
+fi
 
 if [ -s $new_array ]; then
 	echo -e "<?xml version='1.0' encoding='UTF-8'?>\n<resources>" > $new_array_final
@@ -107,6 +116,14 @@ if [ "$5" != "" ]; then
 	untranslateable_list=$5
 else
 	untranslateable_list=undefined
+fi
+
+if [ "$6" != "" ]; then
+	dual_merge=$6
+fi
+
+if [ "$7" != "" ]; then
+	orig_array_second=$7
 fi
 
 MergeArrays

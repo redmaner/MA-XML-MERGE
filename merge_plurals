@@ -31,20 +31,6 @@ grep '<plurals' $orig_plural | uniq --unique | while read plural; do
 	plural_type=$(echo $plural | cut -d'<' -f2 | cut -d' ' -f1)
 	plural_name=$(echo $plural | cut -d'"' -f2)
 
-	if [ -e $untranslateable_list ]; then
-		if [ $(cat $untranslateable_list | grep ''$apk_file' '$plural_name' plurals.xml' | wc -l) -gt 0 ]; then
-			continue
-		fi
-	fi
-	
-#	if [ "`grep "$plural" $orig_plural | grep '/>'`" == "" ]; then
-		if [ $(sed -e '/<'$plural_type' name="'$plural_name'"/,/'$plural_type'>/!d' $orig_plural | grep '@android\|@string\|@color\|@drawable\|@null\|@plural\|@array\|@raw\|@xml' | wc -l) -gt 0 ]; then
-			continue
-		elif [ $(sed -e '/<'$plural_type' name="'$plural_name'"/,/'$plural_type'>/!d' $orig_plural | grep '@*android' | wc -l) -gt 0 ]; then
-			continue
-		fi
-#	fi
-
 	if [ $(sed -e '/name="'$plural_name'"/!d' $targ_plural | wc -l) -gt 0 ]; then
 		if [ $(sed -e '/name="'$plural_name'"/!d' $targ_plural | grep '/>' | wc -l) -gt 0 ]; then
 			sed -e '/<'$plural_type' name="'$plural_name'"/!d' $targ_plural >> $new_plural; continue
@@ -59,6 +45,31 @@ grep '<plurals' $orig_plural | uniq --unique | while read plural; do
 		fi
 	fi
 done
+
+if [ $dual_merge == true ]; then
+
+	grep '<plurals' $orig_plural_second | uniq --unique | while read plural; do
+
+		plural_type=$(echo $plural | cut -d'<' -f2 | cut -d' ' -f1)
+		plural_name=$(echo $plural | cut -d'"' -f2)
+
+		if [ $(sed -e '/name="'$plural_name'"/!d' $orig_plural | wc -l) -gt 0 ]; then
+			continue
+		elif [ $(sed -e '/name="'$plural_name'"/!d' $targ_plural | wc -l) -gt 0 ]; then
+			if [ $(sed -e '/name="'$plural_name'"/!d' $targ_plural | grep '/>' | wc -l) -gt 0 ]; then
+				sed -e '/<'$plural_type' name="'$plural_name'"/!d' $targ_plural >> $new_plural; continue
+			else
+				sed -e '/<'$plural_type' name="'$plural_name'"/,/'$plural_type'>/!d' $targ_plural >> $new_plural; continue
+			fi
+		else
+			if [ $(sed -e '/name="'$plural_name'"/!d' $orig_plural_second | grep '/>' | wc -l) -gt 0 ]; then
+				sed -e '/<'$plural_type' name="'$plural_name'"/!d' $orig_plural_second >> $new_plural; continue
+			else	
+				sed -e '/<'$plural_type' name="'$plural_name'"/,/'$plural_type'>/!d' $orig_plural_second >> $new_plural; continue
+			fi
+		fi
+	done
+fi
 
 if [ -s $new_plural ]; then
 	echo -e "<?xml version='1.0' encoding='UTF-8'?>\n<resources>" > $new_plural_final
@@ -107,6 +118,14 @@ if [ "$5" != "" ]; then
 	untranslateable_list=$5
 else
 	untranslateable_list=undefined
+fi
+
+if [ "$6" != "" ]; then
+	dual_merge=$6
+fi
+
+if [ "$7" != "" ]; then
+	orig_plural_second=$7
 fi
 
 MergePlurals

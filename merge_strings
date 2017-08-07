@@ -29,19 +29,6 @@ mkdir -p $new_string_dir
 echo -e "<?xml version='1.0' encoding='UTF-8'?>
 <resources>" > $new_string
 sed -e '/string name="/!d' $orig_string | cut -d'"' -f2 | uniq --unique | while read string_name; do
-
-	if [ -e $untranslateable_list ]; then
-		if [ $(cat $untranslateable_list | grep ''$apk_file' '$string_name'' | wc -l) -gt 0 ]; then
-			continue
-		fi
-	fi
-
-	if [ $(sed -e '/name="'$string_name'"/!d' $orig_string | grep '@android\|@string\|@color\|@drawable\|@null\|@plural\|@array\|@raw\|@xml' | wc -l) -gt 0 ]; then
-		continue
-	elif [ $(sed -e '/name="'$string_name'"/!d' $orig_string | grep '@*android' | wc -l) -gt 0 ]; then
-		continue
-	fi
-
 	if [ $(sed -e '/name="'$string_name'"/!d' $targ_string | wc -l) -gt 0 ]; then
 		if [ $(sed -e '/name="'$string_name'"/!d' $targ_string | grep '</string>' | wc -l) -gt 0 ]; then
 			sed -e '/<string name="'$string_name'"/!d' $targ_string >> $new_string; continue
@@ -60,8 +47,31 @@ sed -e '/string name="/!d' $orig_string | cut -d'"' -f2 | uniq --unique | while 
 		fi
 	fi
 done
+if [ $dual_merge == true ]; then
+	sed -e '/string name="/!d' $orig_string_second| cut -d'"' -f2 | uniq --unique | while read string_name; do
+		if [ $(sed -e '/name="'$string_name'"/!d' $orig_string | wc -l) -gt 0 ]; then
+			continue
+		elif [ $(sed -e '/name="'$string_name'"/!d' $targ_string | wc -l) -gt 0 ]; then
+			if [ $(sed -e '/name="'$string_name'"/!d' $targ_string | grep '</string>' | wc -l) -gt 0 ]; then
+				sed -e '/<string name="'$string_name'"/!d' $targ_string >> $new_string; continue
+			elif [ $(sed -e '/name="'$string_name'"/!d' $targ_string | grep '/>' | wc -l) -gt 0 ]; then
+				sed -e '/<string name="'$string_name'"/!d' $targ_string >> $new_string; continue
+			else
+				sed -e '/<string name="'$string_name'"/,/string>/!d' $targ_string >> $new_string; continue
+			fi
+		else
+			if [ $(sed -e '/name="'$string_name'"/!d' $orig_string_second | grep '</string>' | wc -l) -gt 0 ]; then
+				sed -e '/<string name="'$string_name'"/!d' $orig_string_second >> $new_string; continue
+			elif [ $(sed -e '/name="'$string_name'"/!d' $orig_string_second | grep '/>' | wc -l) -gt 0 ]; then
+				sed -e '/<string name="'$string_name'"/!d' $orig_string_second >> $new_string; continue
+			else	
+				sed -e '/<string name="'$string_name'"/,/string>/!d' $orig_string_second >> $new_string; continue
+			fi
+		fi
+	done
+fi
 echo '</resources>' >> $new_string
-$python $up/sort.py $new_string_dir > /dev/null
+#$python $up/sort.py $new_string_dir > /dev/null
 echo -e "${txtblu}>> Merged ${txtgrn}strings${txtrst} $apk_file to $new_string"
 }
 
@@ -102,6 +112,14 @@ if [ "$5" != "" ]; then
 	untranslateable_list=$5
 else
 	untranslateable_list=undefined
+fi
+
+if [ "$6" != "" ]; then
+	dual_merge=$6
+fi
+
+if [ "$7" != "" ]; then
+	orig_string_second=$7
 fi
 
 MergeStrings

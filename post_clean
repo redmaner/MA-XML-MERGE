@@ -4,6 +4,7 @@ IGNORELIST=$untranslateable_list
 AUTO_IGNORELIST=$auto_ignorelist
 LANG_VERSION=$lang_version
 source $value_catcher
+source .configuration
 
 xml_remove_string () {
 STRING_NAME=$1
@@ -135,7 +136,7 @@ fi
 }
 
 echo -e "${txtblu}\nPost cleaning${txtrst}"
-for apk_target in $(find $new_dir "*.apk" | sort); do
+find $new_dir -iname "*.apk" | sort | while read apk_target; do
 	APK=$(basename $apk_target)
 	DIR=$(basename $(dirname $apk_target))
 	find $apk_target -iname "arrays.xml*" -o -iname "strings.xml*" -o -iname "plurals.xml*" | while read XML_TARGET; do
