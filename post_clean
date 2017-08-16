@@ -1,10 +1,10 @@
 #!/bin/bash
 
-IGNORELIST=$untranslateable_list
+source .configuration
+UNTRANSLATEABLE_LIST=$untranslateable_list
 AUTO_IGNORELIST=$auto_ignorelist
 LANG_VERSION=$lang_version
 source $value_catcher
-source .configuration
 
 xml_remove_string () {
 STRING_NAME=$1
@@ -39,27 +39,34 @@ case "$TARGET_ARRAY_TYPE" in
 esac
 }
 
+init_list () {
+ITEM_FOLDER=$1
+ITEM_APP=$2
+ITEM_FILE=$3
+ITEM_NAME=$4
+}
+
 xml_fix_untranslateable () {
 # Fix untranslateable strings, arrays, plurals using ignorelist
-if [ $(cat $IGNORELIST | grep ''$APK' '$XML_TYPE' ' | wc -l) -gt 0 ]; then
+if [ $(cat $UNTRANSLATEABLE_LIST | grep ''$APK' '$XML_TYPE' ' | wc -l) -gt 0 ]; then
 	case "$XML_TYPE" in
 		arrays.xml)
-		cat $IGNORELIST | grep 'all '$APK' '$XML_TYPE' ' | while read all_line; do
-			init_ignorelist $(cat $IGNORELIST | grep "$all_line")
+		cat $UNTRANSLATEABLE_LIST | grep 'all '$APK' '$XML_TYPE' ' | while read all_line; do
+			init_list $(cat $UNTRANSLATEABLE_LIST | grep "$all_line")
 			xml_remove_array ''$ITEM_NAME''
 		done 
-		cat $IGNORELIST | grep ''$DIR' '$APK' '$XML_TYPE' ' | while read all_line; do
-			init_ignorelist $(cat $IGNORELIST | grep "$all_line")
+		cat $UNTRANSLATEABLE_LIST | grep ''$DIR' '$APK' '$XML_TYPE' ' | while read all_line; do
+			init_list $(cat $UNTRANSLATEABLE_LIST | grep "$all_line")
 			xml_remove_array ''$ITEM_NAME''
 		done;;
 
 		strings.xml)
-		cat $IGNORELIST | grep 'all '$APK' '$XML_TYPE' ' | while read all_line; do
-			init_ignorelist $(cat $IGNORELIST | grep "$all_line")
+		cat $UNTRANSLATEABLE_LIST | grep 'all '$APK' '$XML_TYPE' ' | while read all_line; do
+			init_list $(cat $UNTRANSLATEABLE_LIST | grep "$all_line")
 			xml_remove_string ''$ITEM_NAME''
 		done 
-		cat $IGNORELIST | grep ''$DIR' '$APK' '$XML_TYPE' ' | while read all_line; do
-			init_ignorelist $(cat $IGNORELIST | grep "$all_line")
+		cat $UNTRANSLATEABLE_LIST | grep ''$DIR' '$APK' '$XML_TYPE' ' | while read all_line; do
+			init_list $(cat $UNTRANSLATEABLE_LIST | grep "$all_line")
 			xml_remove_string ''$ITEM_NAME''
 		done;;
 	esac

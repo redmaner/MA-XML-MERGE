@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright (c) 2014, Redmaner
 
-VERSION=5.0.0
+VERSION=17.8.16
 up=$PWD
 
 # Define bash colors for Mac OSX / Linux

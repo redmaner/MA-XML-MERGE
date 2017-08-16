@@ -143,19 +143,19 @@ case "$input" in
 	6) orig_dir=$up/MIUI8/cancro
 	   dir_mode=auto
 	   lang_version=8
-	   untranslateable=$up/resources/MIUI8_ignorelist.xml.mxcr
+	   untranslateable=$up/resources/MIUI8_untranslateable.xml.mxcr
 	   auto_ignorelist=$up/resources/MIUI8_auto_ignorelist.xml
 	   value_catcher=$up/resources/MIUI8_value_catcher.sh;;
 	7) orig_dir=$up/MIUI8/cancro
 	   dir_mode=auto
 	   lang_version=8
-	   untranslateable=$up/resources/MIUI8_ignorelist.xml.mxcr
+	   untranslateable=$up/resources/MIUI8_untranslateable.xml.mxcr
 	   auto_ignorelist=$up/resources/MIUI8_auto_ignorelist.xml
 	   value_catcher=$up/resources/MIUI8_value_catcher.sh;;
 	8) InputPathOrig
 	   dir_mode=custom
 	   lang_version=8
-	   untranslateable=$up/resources/MIUI8_ignorelist.xml.mxcr
+	   untranslateable=$up/resources/MIUI8_untranslateable.xml.mxcr
 	   auto_ignorelist=$up/resources/MIUI8_auto_ignorelist.xml
 	   value_catcher=$up/resources/MIUI8_value_catcher.sh;;
 esac
@@ -166,7 +166,8 @@ MakeConfig
 
 MakeConfigDualMerge () {
 echo -e "\nWhich two repositories (MIUI Version) do you want to use as base for your new translation?
- 1 - MIUI8 Gemini and MIUI8 sagit"
+ 1 - MIUI8 Gemini and MIUI8 sagit
+ 2 - MIUI9 Mido and MIUI9 sagit"
 echo -en "\nPlease enter your choice: "; read input
 
 case "$input" in 
@@ -176,9 +177,18 @@ case "$input" in
 	dual_merge=true
 	dir_mode=auto
 	lang_version=8
-	untranslateable=$up/resources/MIUI8_ignorelist.xml.mxcr
+	untranslateable=$up/resources/MIUI8_untranslateable.xml.mxcr
 	auto_ignorelist=$up/resources/MIUI8_auto_ignorelist.xml
 	value_catcher=$up/resources/MIUI8_value_catcher.sh;;
+	2) 
+	orig_dir=$up/MIUI9/mido
+	orig_dir_second=$up/MIUI9/sagit
+	dual_merge=true
+	dir_mode=auto
+	lang_version=9
+	untranslateable=$up/resources/MIUI9_untranslateable.xml.mxcr
+	auto_ignorelist=$up/resources/MIUI9_auto_ignorelist.xml
+	value_catcher=$up/resources/MIUI9_value_catcher_lean.sh;;
 esac
 
 MakeConfig
@@ -236,6 +246,13 @@ if [ -d $up/MIUI8 ]; then
 	SyncRepo "update" "MIUI8" "master"
 else
 	SyncRepo "new" "https://github.com/Acid-miuipolskapl/v8-XML-Compare" "MIUI8"
+fi
+
+echo -e "${txtblu}\nSyncing Xiaomi.eu-MIUIv9-XML-Compare (MIUI9)${txtrst}"
+if [ -d $up/MIUI9 ]; then 
+	SyncRepo "update" "MIUI9" "master"
+else
+	SyncRepo "new" "https://github.com/ingbrzy/Xiaomi.eu-MIUIv9-XML-Compare" "MIUI9"
 fi
 
 echo -e "${txtblu}\nSyncing resources${txtrst}"

@@ -19,7 +19,7 @@ target_git_pull=enabled
 
 # Translate framework: enable if the framework iso code is diffrent from the normal iso code.
 # For example main iso is values-nl, but for framework it is values-nl-rNL
-translate_framework=enabled
+translate_framework=disabled
 
 # Max processes: the amount of sub-processes the script is able to run.
 # Feference point is 4 a 6 sub-processes per CPU core.
